@@ -3,19 +3,21 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using SnapMini.Services;
 
 namespace SnapMini.Views
 {
     /// <summary>
-    /// Code-behind for AnswerWindow. Includes screen position picker (Top-Left, Top-Right, Center, Bottom-Left, Bottom-Right)
-    /// and saves user position preference for future popups.
+    /// Code-behind for AnswerWindow. Includes screen position picker (Top-Left, Top-Right, Center, Bottom-Left, Bottom-Right),
+    /// displays SM_logo.png in the header bar, and provides Pause/Resume control for the auto-close timer.
     /// </summary>
     public partial class AnswerWindow : Window
     {
         private readonly DispatcherTimer _timer;
         private int _ticksRemaining = 250;
+        private bool _isPaused = false;
         private static readonly string PositionFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "window_position.txt");
 
         public AnswerWindow(string questionText, string answerText, string modelName = "")
@@ -26,6 +28,9 @@ namespace SnapMini.Views
             AnswerText.Text = answerText.Trim();
             ModelTagText.Text = string.IsNullOrWhiteSpace(modelName) ? AIService.CurrentModelDisplayName : modelName;
 
+            LoadLogoImage();
+
+            // Progress bar and auto-close timer (updates every 100ms)
             _timer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromMilliseconds(100)
@@ -42,7 +47,53 @@ namespace SnapMini.Views
                     Close();
                 }
             };
+
+            // Start timer automatically by default
             _timer.Start();
+        }
+
+        private void PauseButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (!_isPaused)
+            {
+                // Pause timer
+                _timer.Stop();
+                _isPaused = true;
+                PauseBtnText.Text = "Resume";
+                PauseIcon.Text = "▶ ";
+                PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+                TimerLabel.Text = $"Paused ({(_ticksRemaining / 10) + 1}s left)";
+                AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
+            }
+            else
+            {
+                // Resume timer
+                _timer.Start();
+                _isPaused = false;
+                PauseBtnText.Text = "Pause";
+                PauseIcon.Text = "⏸ ";
+                PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
+                TimerLabel.Text = $"Auto closing in {(_ticksRemaining / 10) + 1}s";
+                AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+            }
+        }
+
+        private void LoadLogoImage()
+        {
+            try
+            {
+                string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "SM_logo.png");
+                if (File.Exists(logoPath))
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(logoPath, UriKind.Absolute);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    AppLogoImage.Source = bitmap;
+                }
+            }
+            catch { }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

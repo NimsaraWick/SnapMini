@@ -26,7 +26,7 @@
                 <RowDefinition Height="Auto"/> <!-- Footer -->
             </Grid.RowDefinitions>
 
-            <!-- 1. Header (Draggable Bar with Position Controls & Model Badge) -->
+            <!-- 1. Header (Draggable Bar with Position Controls & SM Logo) -->
             <Border Grid.Row="0" Background="#1E293B" CornerRadius="15,15,0,0" Padding="14,10" MouseDown="Header_MouseDown">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -37,17 +37,10 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- App Brand Badge -->
+                    <!-- App Brand Badge with SM Logo Image -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Border CornerRadius="8" Width="26" Height="26" Margin="0,0,8,0">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#6366F1" Offset="0.0"/>
-                                    <GradientStop Color="#A855F7" Offset="1.0"/>
-                                </LinearGradientBrush>
-                            </Border.Background>
-                            <TextBlock Text="✨" Foreground="White" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
+                        <Image x:Name="AppLogoImage" Width="26" Height="26" Margin="0,0,8,0" 
+                               RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center"/>
                         <TextBlock Text="SnapMini" Foreground="#F8FAFC" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
                     </StackPanel>
 
@@ -116,18 +109,28 @@
                 </Border>
             </DockPanel>
 
-            <!-- 4. Footer Progress Bar & Auto-close status -->
+            <!-- 4. Footer Progress Bar, Pause Control & Auto-close status -->
             <Border Grid.Row="3" Background="#0F172A" CornerRadius="0,0,15,15" Padding="16,8,16,12">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <ProgressBar x:Name="AutoCloseProgress" Grid.Column="0" Height="4" Maximum="250" Value="250" 
                                  Foreground="#6366F1" Background="#1E293B" BorderThickness="0" VerticalAlignment="Center" Margin="0,0,12,0"/>
 
-                    <TextBlock x:Name="TimerLabel" Grid.Column="1" Text="Auto closing in 25s" Foreground="#64748B" FontSize="11" VerticalAlignment="Center"/>
+                    <!-- Pause / Resume Button -->
+                    <Border Grid.Column="1" x:Name="PauseBtn" MouseLeftButtonDown="PauseButton_Click" Cursor="Hand" 
+                            Background="#334155" CornerRadius="6" Padding="8,3" Margin="0,0,10,0" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="PauseIcon" Text="⏸ " Foreground="#E2E8F0" FontSize="10" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="PauseBtnText" Text="Pause" Foreground="#E2E8F0" FontSize="11" FontWeight="Medium" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock x:Name="TimerLabel" Grid.Column="2" Text="Auto closing in 25s" Foreground="#64748B" FontSize="11" VerticalAlignment="Center"/>
                 </Grid>
             </Border>
         </Grid>

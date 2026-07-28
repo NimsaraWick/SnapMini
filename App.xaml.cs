@@ -1,4 +1,6 @@
+using System;
 using System.Drawing;
+using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using SnapMini.Helpers;
@@ -7,6 +9,7 @@ namespace SnapMini
 {
     /// <summary>
     /// Application entry point configuring System Tray icon and registering Global Hotkeys.
+    /// Uses Images/SM_icon.png as custom system tray icon.
     /// </summary>
     public partial class App : System.Windows.Application
     {
@@ -20,9 +23,27 @@ namespace SnapMini
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+            // Load custom System Tray icon from Images/SM_icon.png
+            Icon trayIconImage = SystemIcons.Application;
+            string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "SM_icon.png");
+
+            if (File.Exists(iconPath))
+            {
+                try
+                {
+                    using var bmp = new Bitmap(iconPath);
+                    IntPtr hIcon = bmp.GetHicon();
+                    trayIconImage = Icon.FromHandle(hIcon);
+                }
+                catch
+                {
+                    trayIconImage = SystemIcons.Application;
+                }
+            }
+
             _trayIcon = new NotifyIcon
             {
-                Icon = SystemIcons.Application,
+                Icon = trayIconImage,
                 Visible = true,
                 Text = "SnapMini (AI Assistant)\n• Ctrl+Alt+A: Selected Text\n• Ctrl+Alt+S: Screenshot"
             };

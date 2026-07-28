@@ -12,13 +12,19 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
 
+    <!-- Executable Icon -->
+    <ApplicationIcon>Images\SM_icon.ico</ApplicationIcon>
+
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 
-  <!-- Copy appsettings.json to output directory when compiling -->
+  <!-- Copy appsettings.json and Images folder to output directory when compiling -->
   <ItemGroup>
     <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
