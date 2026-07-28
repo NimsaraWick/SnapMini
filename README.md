@@ -56,7 +56,7 @@ Create `appsettings.json` in the root folder to set your API Keys and choose you
 
 ### Run from Terminal
 ```powershell
-cd C:\Users\NwicK\Desktop\SnapMini
+cd C:\SnapMini #project location
 dotnet run
 ```
 
