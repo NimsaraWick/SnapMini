@@ -7,8 +7,10 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+using SnapMini.Services;
+using SnapMini.Views;
 
-namespace SnapMini
+namespace SnapMini.Helpers
 {
     /// <summary>
     /// Manages native Windows global hotkeys (RegisterHotKey API).
@@ -42,16 +44,12 @@ namespace SnapMini
         private const int HOTKEY_TEXT_ID = 9001;
         private const int HOTKEY_SCREENSHOT_ID = 9002;
 
-        // Virtual Key codes: 'A' = 0x41, 'S' = 0x53
         private const uint VK_A = 0x41;
         private const uint VK_S = 0x53;
 
         private HwndSource? _hwndSource;
         private IntPtr _windowHandle;
 
-        /// <summary>
-        /// Registers global hotkeys (Ctrl + Alt + A & Ctrl + Alt + S).
-        /// </summary>
         public void Register(Window invisibleMessageWindow)
         {
             var helper = new WindowInteropHelper(invisibleMessageWindow);
@@ -60,10 +58,7 @@ namespace SnapMini
             _hwndSource = HwndSource.FromHwnd(_windowHandle);
             _hwndSource?.AddHook(HwndHook);
 
-            // Hotkey 1: Ctrl + Alt + A (Ask / Selected Text QA)
             bool textHotkeySuccess = RegisterHotKey(_windowHandle, HOTKEY_TEXT_ID, MOD_CONTROL | MOD_ALT, VK_A);
-            
-            // Hotkey 2: Ctrl + Alt + S (Screenshot Snipping QA)
             bool screenshotHotkeySuccess = RegisterHotKey(_windowHandle, HOTKEY_SCREENSHOT_ID, MOD_CONTROL | MOD_ALT, VK_S);
 
             if (!textHotkeySuccess || !screenshotHotkeySuccess)
@@ -94,27 +89,18 @@ namespace SnapMini
             return IntPtr.Zero;
         }
 
-        /// <summary>
-        /// Triggered by Ctrl + Alt + A.
-        /// Programmatically releases Alt key state and sends Ctrl+C to copy selected browser text.
-        /// </summary>
         private async Task HandleSelectedTextHotkeyAsync()
         {
             try
             {
-                // 1. Clear clipboard first so stale/old clipboard text is never reused
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     try { System.Windows.Clipboard.Clear(); } catch { }
                 });
 
-                // 2. Short pause for user to release shortcut keys
                 await Task.Delay(100);
-
-                // 3. Programmatically release Alt & Ctrl keys and send clean Ctrl+C
                 SimulateCleanCopy();
 
-                // 4. Poll clipboard for up to 1 second to capture newly copied text
                 string selectedText = string.Empty;
                 for (int i = 0; i < 10; i++)
                 {
@@ -140,13 +126,11 @@ namespace SnapMini
                     return;
                 }
 
-                // 5. Query Gemini API with selected text
-                string answer = await GeminiService.GetAnswerAsync(selectedText);
+                string answer = await AIService.GetAnswerAsync(selectedText);
 
-                // 6. Show Answer Window
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    var win = new AnswerWindow(selectedText, answer);
+                    var win = new AnswerWindow(selectedText, answer, AIService.CurrentModelDisplayName);
                     win.Show();
                     win.Activate();
                 });
@@ -157,31 +141,23 @@ namespace SnapMini
             }
         }
 
-        /// <summary>
-        /// Triggered by Ctrl + Alt + S.
-        /// Opens Windows Snipping Tool automatically, waits for user to snip screen area, reads image via WinForms+WPF fallback, runs OCR & Gemini.
-        /// </summary>
         private async Task HandleScreenshotHotkeyAsync()
         {
             try
             {
-                // Clear existing clipboard image first
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     try { System.Windows.Clipboard.Clear(); } catch { }
                 });
 
-                // Launch Windows Snipping Tool overlay directly
                 try
                 {
                     Process.Start(new ProcessStartInfo("ms-screenclip:") { UseShellExecute = true });
                 }
                 catch
                 {
-                    // Fallback if protocol unavailable
                 }
 
-                // Poll for up to 15 seconds for user to complete screenshot snip
                 BitmapSource? image = null;
                 for (int i = 0; i < 60; i++)
                 {
@@ -197,11 +173,9 @@ namespace SnapMini
 
                 if (image == null)
                 {
-                    // User canceled snip or timed out
                     return;
                 }
 
-                // Run native OCR on snippet image
                 string ocrText = await OcrService.ExtractTextAsync(image);
 
                 if (string.IsNullOrWhiteSpace(ocrText))
@@ -210,13 +184,11 @@ namespace SnapMini
                     return;
                 }
 
-                // Ask Gemini API
-                string answer = await GeminiService.GetAnswerAsync(ocrText);
+                string answer = await AIService.GetAnswerAsync(ocrText);
 
-                // Display answer popup
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    var win = new AnswerWindow(ocrText, answer);
+                    var win = new AnswerWindow(ocrText, answer, AIService.CurrentModelDisplayName);
                     win.Show();
                     win.Activate();
                 });
@@ -227,9 +199,6 @@ namespace SnapMini
             }
         }
 
-        /// <summary>
-        /// Robust clipboard image reader supporting both WinForms DIB formats (used by Snipping Tool) and WPF formats.
-        /// </summary>
         private static BitmapSource? GetImageFromClipboard()
         {
             try
@@ -250,15 +219,11 @@ namespace SnapMini
             }
             catch
             {
-                // Clipboard locked by OS temporarily
             }
 
             return null;
         }
 
-        /// <summary>
-        /// Converts GDI System.Drawing.Image to WPF BitmapSource.
-        /// </summary>
         private static BitmapSource ConvertToBitmapSource(System.Drawing.Image image)
         {
             using var bitmap = new System.Drawing.Bitmap(image);
@@ -277,18 +242,12 @@ namespace SnapMini
             }
         }
 
-        /// <summary>
-        /// Programmatically releases Alt, Ctrl, and Shift modifier keys before sending Ctrl+C.
-        /// Fixes Windows turning Ctrl+C into Ctrl+Alt+C while user holds hotkey.
-        /// </summary>
         private static void SimulateCleanCopy()
         {
-            // Force release Alt, Ctrl, Shift keys
             keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
             keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
             keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
 
-            // Send Ctrl DOWN -> C DOWN -> C UP -> Ctrl UP
             keybd_event(VK_CONTROL, 0, 0, UIntPtr.Zero);
             keybd_event(VK_C, 0, 0, UIntPtr.Zero);
             keybd_event(VK_C, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);

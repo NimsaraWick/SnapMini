@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SnapMini
+namespace SnapMini.Services
 {
     /// <summary>
     /// Service for interacting with Google Gemini REST API.
@@ -15,12 +15,8 @@ namespace SnapMini
     {
         private static readonly HttpClient Http = new HttpClient();
 
-        /// <summary>
-        /// Reads the Gemini API key from appsettings.json in the application root directory.
-        /// </summary>
         private static string GetApiKey()
         {
-            // Build full path to appsettings.json in application execution folder
             string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
 
             if (File.Exists(configPath))
@@ -30,7 +26,6 @@ namespace SnapMini
                     string jsonText = File.ReadAllText(configPath);
                     using var doc = JsonDocument.Parse(jsonText);
 
-                    // Extract "GeminiApiKey" property from JSON
                     if (doc.RootElement.TryGetProperty("GeminiApiKey", out var keyProperty))
                     {
                         string? keyFromFile = keyProperty.GetString();
@@ -46,7 +41,6 @@ namespace SnapMini
                 }
             }
 
-            // Fallback: Check environment variable if appsettings.json missing or key unchanged
             string? envKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
             if (!string.IsNullOrWhiteSpace(envKey))
             {
@@ -57,15 +51,10 @@ namespace SnapMini
                 "Gemini API Key missing! Please paste your key into 'GeminiApiKey' inside appsettings.json or set GEMINI_API_KEY environment variable.");
         }
 
-        /// <summary>
-        /// Sends text or OCR input to Google Gemini model and returns direct answer.
-        /// </summary>
         public static async Task<string> GetAnswerAsync(string inputText)
         {
-            // Fetch API Key from configuration
             string apiKey = GetApiKey();
 
-            // Build request body for Gemini generateContent endpoint
             var payload = new
             {
                 contents = new[]
@@ -86,13 +75,11 @@ namespace SnapMini
                 }
             };
 
-            // Target Gemini 2.5 Flash model REST API endpoint
             string endpointUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}";
 
             string jsonRequestBody = JsonSerializer.Serialize(payload);
             using var content = new StringContent(jsonRequestBody, Encoding.UTF8, "application/json");
 
-            // Execute HTTP POST request
             HttpResponseMessage response = await Http.PostAsync(endpointUrl, content);
             string responseBody = await response.Content.ReadAsStringAsync();
 
@@ -101,7 +88,6 @@ namespace SnapMini
                 throw new InvalidOperationException($"Gemini API error ({response.StatusCode}): {responseBody}");
             }
 
-            // Parse response structure: candidates[0].content.parts[0].text
             using var doc = JsonDocument.Parse(responseBody);
             var root = doc.RootElement;
 
