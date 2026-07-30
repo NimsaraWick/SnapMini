@@ -9,7 +9,7 @@ namespace SnapMini.Services
 {
     /// <summary>
     /// Service for interacting with Google Gemini REST API.
-    /// Reads API Key directly from appsettings.json or environment variables.
+    /// Supports dynamic model selection (gemini-2.5-flash, gemini-1.5-flash, gemini-1.5-pro) and custom system prompts.
     /// </summary>
     public static class GeminiService
     {
@@ -48,12 +48,16 @@ namespace SnapMini.Services
             }
 
             throw new InvalidOperationException(
-                "Gemini API Key missing! Please paste your key into 'GeminiApiKey' inside appsettings.json or set GEMINI_API_KEY environment variable.");
+                "Gemini API Key missing! Please set your key inside appsettings.json or open Settings (⚙️).");
         }
 
-        public static async Task<string> GetAnswerAsync(string inputText)
+        public static async Task<string> GetAnswerAsync(string inputText, string modelName = "gemini-2.5-flash", string? customPrompt = null)
         {
             string apiKey = GetApiKey();
+
+            string promptHeader = string.IsNullOrWhiteSpace(customPrompt) 
+                ? AIService.DefaultSystemPrompt 
+                : customPrompt;
 
             var payload = new
             {
@@ -65,17 +69,15 @@ namespace SnapMini.Services
                         {
                             new
                             {
-                                text = "The following text was captured from the user's screen or selected text. It may be a " +
-                                       "question, code snippet, or problem statement. Provide a direct, concise, " +
-                                       "and accurate answer. If it is a multiple-choice question, state the correct option first.\n\n" +
-                                       "---\n" + inputText + "\n---"
+                                text = promptHeader + "\n\n---\n" + inputText + "\n---"
                             }
                         }
                     }
                 }
             };
 
-            string endpointUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}";
+            string targetModel = string.IsNullOrWhiteSpace(modelName) ? "gemini-2.5-flash" : modelName;
+            string endpointUrl = $"https://generativelanguage.googleapis.com/v1beta/models/{targetModel}:generateContent?key={apiKey}";
 
             string jsonRequestBody = JsonSerializer.Serialize(payload);
             using var content = new StringContent(jsonRequestBody, Encoding.UTF8, "application/json");

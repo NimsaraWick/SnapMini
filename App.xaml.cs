@@ -4,12 +4,13 @@ using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using SnapMini.Helpers;
+using SnapMini.Views;
 
 namespace SnapMini
 {
     /// <summary>
     /// Application entry point configuring System Tray icon and registering Global Hotkeys.
-    /// Uses Images/SM_icon.png as custom system tray icon.
+    /// Uses Images/SM_icon.png as custom system tray icon and provides Settings menu.
     /// </summary>
     public partial class App : System.Windows.Application
     {
@@ -49,6 +50,13 @@ namespace SnapMini
             };
 
             var contextMenu = new ContextMenuStrip();
+            contextMenu.Items.Add("Settings", null, (sender, args) =>
+            {
+                var settingsWin = new SettingsWindow();
+                settingsWin.Show();
+                settingsWin.Activate();
+            });
+            contextMenu.Items.Add("-"); // Separator
             contextMenu.Items.Add("Exit", null, (sender, args) => Shutdown());
             _trayIcon.ContextMenuStrip = contextMenu;
 

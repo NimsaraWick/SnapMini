@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace SnapMini.Services
 {
     /// <summary>
-    /// Service for interacting with Groq API (OpenAI-compatible chat completions).
-    /// Supports dynamic model selection (llama-3.3-70b-versatile, deepseek-r1-distill-llama-70b, mixtral-8x7b-32768, gemma2-9b-it).
+    /// Service for interacting with OpenRouter API (OpenAI-compatible gateway supporting hundreds of LLMs).
+    /// Supports models like deepseek/deepseek-r1:free, meta-llama/llama-3.3-70b-instruct:free, anthropic/claude-3.5-sonnet, etc.
     /// </summary>
-    public static class GroqService
+    public static class OpenRouterService
     {
         private static readonly HttpClient Http = new HttpClient();
 
@@ -27,10 +27,10 @@ namespace SnapMini.Services
                     string jsonText = File.ReadAllText(configPath);
                     using var doc = JsonDocument.Parse(jsonText);
 
-                    if (doc.RootElement.TryGetProperty("GroqApiKey", out var keyProperty))
+                    if (doc.RootElement.TryGetProperty("OpenRouterApiKey", out var keyProperty))
                     {
                         string? keyFromFile = keyProperty.GetString();
-                        if (!string.IsNullOrWhiteSpace(keyFromFile) && keyFromFile != "your_actual_groq_api_key_here")
+                        if (!string.IsNullOrWhiteSpace(keyFromFile) && keyFromFile != "your_actual_openrouter_api_key_here")
                         {
                             return keyFromFile;
                         }
@@ -42,17 +42,20 @@ namespace SnapMini.Services
                 }
             }
 
-            string? envKey = Environment.GetEnvironmentVariable("GROQ_API_KEY");
+            string? envKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
             if (!string.IsNullOrWhiteSpace(envKey))
             {
                 return envKey;
             }
 
             throw new InvalidOperationException(
-                "Groq API Key missing! Please set your key inside appsettings.json or open Settings (⚙️).");
+                "OpenRouter API Key missing! Please set your key inside appsettings.json or open Settings (⚙️).");
         }
 
-        public static async Task<string> GetAnswerAsync(string inputText, string modelName = "llama-3.3-70b-versatile", string? customPrompt = null)
+        /// <summary>
+        /// Sends prompt & text to OpenRouter REST API endpoint.
+        /// </summary>
+        public static async Task<string> GetAnswerAsync(string inputText, string modelName = "deepseek/deepseek-r1:free", string? customPrompt = null)
         {
             string apiKey = GetApiKey();
 
@@ -60,12 +63,11 @@ namespace SnapMini.Services
                 ? AIService.DefaultSystemPrompt 
                 : customPrompt;
 
-            string targetModel = string.IsNullOrWhiteSpace(modelName) ? "llama-3.3-70b-versatile" : modelName;
+            string targetModel = string.IsNullOrWhiteSpace(modelName) ? "deepseek/deepseek-r1:free" : modelName;
 
             var payload = new
             {
                 model = targetModel,
-                max_tokens = 600,
                 messages = new[]
                 {
                     new
@@ -76,8 +78,10 @@ namespace SnapMini.Services
                 }
             };
 
-            using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.groq.com/openai/v1/chat/completions");
+            using var request = new HttpRequestMessage(HttpMethod.Post, "https://openrouter.ai/api/v1/chat/completions");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            request.Headers.Add("HTTP-Referer", "https://github.com/NimsaraWick/SnapMini");
+            request.Headers.Add("X-Title", "SnapMini");
 
             string jsonBody = JsonSerializer.Serialize(payload);
             request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -87,7 +91,7 @@ namespace SnapMini.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new InvalidOperationException($"Groq API error ({response.StatusCode}): {responseBody}");
+                throw new InvalidOperationException($"OpenRouter API error ({response.StatusCode}): {responseBody}");
             }
 
             using var doc = JsonDocument.Parse(responseBody);
@@ -103,7 +107,7 @@ namespace SnapMini.Services
                 }
             }
 
-            return "Could not parse response from Groq API.";
+            return "Could not parse response from OpenRouter API.";
         }
     }
 }

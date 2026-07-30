@@ -11,7 +11,7 @@ namespace SnapMini.Views
 {
     /// <summary>
     /// Code-behind for AnswerWindow. Includes screen position picker (Top-Left, Top-Right, Center, Bottom-Left, Bottom-Right),
-    /// displays SM_logo.png in the header bar, and provides Pause/Resume control for the auto-close timer.
+    /// displays SM_logo.png in the header bar, provides Pause/Resume control for auto-close timer, and Settings access.
     /// </summary>
     public partial class AnswerWindow : Window
     {
@@ -50,6 +50,18 @@ namespace SnapMini.Views
 
             // Start timer automatically by default
             _timer.Start();
+        }
+
+        private void SettingsButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            var settingsWin = new SettingsWindow();
+            settingsWin.ShowDialog();
+
+            // Refresh active model badge text
+            var settings = AIService.ReadSettings();
+            string provider = settings.Provider;
+            string modelId = provider.Equals("Groq", StringComparison.OrdinalIgnoreCase) ? settings.GroqModel : settings.GeminiModel;
+            ModelTagText.Text = AIService.GetModelDisplayName(provider, modelId);
         }
 
         private void PauseButton_Click(object sender, MouseButtonEventArgs e)
