@@ -12,13 +12,13 @@ namespace SnapMini.Views
     /// <summary>
     /// Code-behind for AnswerWindow. Includes screen position picker (Top-Left, Top-Right, Center, Bottom-Left, Bottom-Right),
     /// displays SM_logo.png in the header bar, provides Pause/Resume control for auto-close timer, and Settings access.
+    /// Position state is persisted directly in appsettings.json.
     /// </summary>
     public partial class AnswerWindow : Window
     {
         private readonly DispatcherTimer _timer;
         private int _ticksRemaining = 250;
         private bool _isPaused = false;
-        private static readonly string PositionFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "window_position.txt");
 
         public AnswerWindow(string questionText, string answerText, string modelName = "")
         {
@@ -60,7 +60,12 @@ namespace SnapMini.Views
             // Refresh active model badge text
             var settings = AIService.ReadSettings();
             string provider = settings.Provider;
-            string modelId = provider.Equals("Groq", StringComparison.OrdinalIgnoreCase) ? settings.GroqModel : settings.GeminiModel;
+            string modelId = provider switch
+            {
+                "OpenRouter" => settings.OpenRouterModel,
+                "Groq" => settings.GroqModel,
+                _ => settings.GeminiModel
+            };
             ModelTagText.Text = AIService.GetModelDisplayName(provider, modelId);
         }
 
@@ -103,7 +108,11 @@ namespace SnapMini.Views
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.EndInit();
                     AppLogoImage.Source = bitmap;
+                    return;
                 }
+
+                var packUri = new Uri("pack://application:,,,/Images/SM_logo.png", UriKind.Absolute);
+                AppLogoImage.Source = new BitmapImage(packUri);
             }
             catch { }
         }
@@ -116,23 +125,17 @@ namespace SnapMini.Views
 
         private string ReadSavedPosition()
         {
-            if (File.Exists(PositionFilePath))
-            {
-                try
-                {
-                    string pos = File.ReadAllText(PositionFilePath).Trim();
-                    if (!string.IsNullOrEmpty(pos)) return pos;
-                }
-                catch { }
-            }
-            return "TopRight";
+            var settings = AIService.ReadSettings();
+            return string.IsNullOrWhiteSpace(settings.WindowPosition) ? "TopRight" : settings.WindowPosition;
         }
 
         private void SavePositionPreference(string positionName)
         {
             try
             {
-                File.WriteAllText(PositionFilePath, positionName);
+                var settings = AIService.ReadSettings();
+                settings.WindowPosition = positionName;
+                AIService.SaveSettings(settings);
             }
             catch { }
         }

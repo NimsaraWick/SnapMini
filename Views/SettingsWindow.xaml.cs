@@ -7,11 +7,15 @@ using SnapMini.Services;
 namespace SnapMini.Views
 {
     /// <summary>
-    /// Code-behind for SettingsWindow. Handles provider switching, model preset dropdowns,
-    /// API key input, and custom system prompt editing.
+    /// Code-behind for SettingsWindow. Handles provider switching (Gemini, Groq, OpenRouter),
+    /// model preset dropdowns, hidden API key PasswordBoxes with eye toggles, and custom system prompt editing.
     /// </summary>
     public partial class SettingsWindow : Window
     {
+        private bool _isGeminiVisible = false;
+        private bool _isGroqVisible = false;
+        private bool _isOpenRouterVisible = false;
+
         private readonly List<ModelOption> _geminiModels = new List<ModelOption>
         {
             new ModelOption("Gemini 2.5 Flash (Recommended)", "gemini-2.5-flash"),
@@ -25,6 +29,13 @@ namespace SnapMini.Views
             new ModelOption("DeepSeek R1 Distill 70B", "deepseek-r1-distill-llama-70b"),
             new ModelOption("Mixtral 8x7B", "mixtral-8x7b-32768"),
             new ModelOption("Gemma 2 9B", "gemma2-9b-it")
+        };
+
+        private readonly List<ModelOption> _openRouterModels = new List<ModelOption>
+        {
+            new ModelOption("OpenAI GPT-OSS 20B (Free)", "openai/gpt-oss-20b:free"),
+            new ModelOption("NVIDIA Nemotron 3 Ultra 550B (Free)", "nvidia/nemotron-3-ultra-550b-a55b:free"),
+            new ModelOption("NVIDIA Nemotron 3 Super 120B (Free)", "nvidia/nemotron-3-super-120b-a12b:free")
         };
 
         private class ModelOption
@@ -50,7 +61,12 @@ namespace SnapMini.Views
         {
             var settings = AIService.ReadSettings();
 
-            if (settings.Provider.Equals("Groq", StringComparison.OrdinalIgnoreCase))
+            if (settings.Provider.Equals("OpenRouter", StringComparison.OrdinalIgnoreCase))
+            {
+                RadioOpenRouter.IsChecked = true;
+                PopulateModels(_openRouterModels, settings.OpenRouterModel);
+            }
+            else if (settings.Provider.Equals("Groq", StringComparison.OrdinalIgnoreCase))
             {
                 RadioGroq.IsChecked = true;
                 PopulateModels(_groqModels, settings.GroqModel);
@@ -61,16 +77,78 @@ namespace SnapMini.Views
                 PopulateModels(_geminiModels, settings.GeminiModel);
             }
 
-            GeminiKeyBox.Text = settings.GeminiApiKey;
-            GroqKeyBox.Text = settings.GroqApiKey;
+            GeminiKeyPass.Password = settings.GeminiApiKey;
+            GeminiKeyText.Text = settings.GeminiApiKey;
+
+            GroqKeyPass.Password = settings.GroqApiKey;
+            GroqKeyText.Text = settings.GroqApiKey;
+
+            OpenRouterKeyPass.Password = settings.OpenRouterApiKey;
+            OpenRouterKeyText.Text = settings.OpenRouterApiKey;
+
             SystemPromptBox.Text = string.IsNullOrWhiteSpace(settings.SystemPrompt) ? AIService.DefaultSystemPrompt : settings.SystemPrompt;
+        }
+
+        private void ToggleGeminiEye_Click(object sender, MouseButtonEventArgs e)
+        {
+            _isGeminiVisible = !_isGeminiVisible;
+            if (_isGeminiVisible)
+            {
+                GeminiKeyText.Text = GeminiKeyPass.Password;
+                GeminiKeyPass.Visibility = Visibility.Collapsed;
+                GeminiKeyText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                GeminiKeyPass.Password = GeminiKeyText.Text;
+                GeminiKeyText.Visibility = Visibility.Collapsed;
+                GeminiKeyPass.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void ToggleGroqEye_Click(object sender, MouseButtonEventArgs e)
+        {
+            _isGroqVisible = !_isGroqVisible;
+            if (_isGroqVisible)
+            {
+                GroqKeyText.Text = GroqKeyPass.Password;
+                GroqKeyPass.Visibility = Visibility.Collapsed;
+                GroqKeyText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                GroqKeyPass.Password = GroqKeyText.Text;
+                GroqKeyText.Visibility = Visibility.Collapsed;
+                GroqKeyPass.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void ToggleOpenRouterEye_Click(object sender, MouseButtonEventArgs e)
+        {
+            _isOpenRouterVisible = !_isOpenRouterVisible;
+            if (_isOpenRouterVisible)
+            {
+                OpenRouterKeyText.Text = OpenRouterKeyPass.Password;
+                OpenRouterKeyPass.Visibility = Visibility.Collapsed;
+                OpenRouterKeyText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                OpenRouterKeyPass.Password = OpenRouterKeyText.Text;
+                OpenRouterKeyText.Visibility = Visibility.Collapsed;
+                OpenRouterKeyPass.Visibility = Visibility.Visible;
+            }
         }
 
         private void Provider_Changed(object sender, RoutedEventArgs e)
         {
             if (ModelCombo == null) return;
 
-            if (RadioGroq.IsChecked == true)
+            if (RadioOpenRouter.IsChecked == true)
+            {
+                PopulateModels(_openRouterModels, "openai/gpt-oss-20b:free");
+            }
+            else if (RadioGroq.IsChecked == true)
             {
                 PopulateModels(_groqModels, "llama-3.3-70b-versatile");
             }
@@ -105,18 +183,21 @@ namespace SnapMini.Views
             try
             {
                 var settings = AIService.ReadSettings();
-                bool isGroq = RadioGroq.IsChecked == true;
 
-                settings.Provider = isGroq ? "Groq" : "Gemini";
+                if (RadioOpenRouter.IsChecked == true) settings.Provider = "OpenRouter";
+                else if (RadioGroq.IsChecked == true) settings.Provider = "Groq";
+                else settings.Provider = "Gemini";
 
                 if (ModelCombo.SelectedItem is ModelOption selectedModel)
                 {
-                    if (isGroq) settings.GroqModel = selectedModel.ModelId;
+                    if (settings.Provider == "OpenRouter") settings.OpenRouterModel = selectedModel.ModelId;
+                    else if (settings.Provider == "Groq") settings.GroqModel = selectedModel.ModelId;
                     else settings.GeminiModel = selectedModel.ModelId;
                 }
 
-                settings.GeminiApiKey = GeminiKeyBox.Text.Trim();
-                settings.GroqApiKey = GroqKeyBox.Text.Trim();
+                settings.GeminiApiKey = (_isGeminiVisible ? GeminiKeyText.Text : GeminiKeyPass.Password).Trim();
+                settings.GroqApiKey = (_isGroqVisible ? GroqKeyText.Text : GroqKeyPass.Password).Trim();
+                settings.OpenRouterApiKey = (_isOpenRouterVisible ? OpenRouterKeyText.Text : OpenRouterKeyPass.Password).Trim();
                 settings.SystemPrompt = SystemPromptBox.Text.Trim();
 
                 AIService.SaveSettings(settings);
@@ -144,11 +225,6 @@ namespace SnapMini.Views
             {
                 DragMove();
             }
-        }
-
-        private void ModelCombo_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-
         }
     }
 }
