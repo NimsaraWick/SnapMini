@@ -11,7 +11,7 @@ namespace SnapMini.Views
 {
     /// <summary>
     /// Code-behind for AnswerWindow. Includes screen position picker (Top-Left, Top-Right, Center, Bottom-Left, Bottom-Right),
-    /// displays SM_logo.png in the header bar, provides Pause/Resume control for auto-close timer, and Settings access.
+    /// displays Images/SM_logo.png in the header bar, provides Pause/Resume control for auto-close timer, and Settings access.
     /// Position state is persisted directly in appsettings.json.
     /// </summary>
     public partial class AnswerWindow : Window
@@ -108,11 +108,7 @@ namespace SnapMini.Views
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.EndInit();
                     AppLogoImage.Source = bitmap;
-                    return;
                 }
-
-                var packUri = new Uri("pack://application:,,,/Images/SM_logo.png", UriKind.Absolute);
-                AppLogoImage.Source = new BitmapImage(packUri);
             }
             catch { }
         }

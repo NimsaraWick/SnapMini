@@ -2,7 +2,7 @@
 
 **SnapMini** is a lightweight, high-performance Windows desktop AI assistant built with C# and .NET 8 WPF. It runs quietly in the system tray and provides instant AI answers for **highlighted text** or **screen screenshots** using global keyboard shortcuts.
 
-Powered by native **Windows OCR** and support for both **Google Gemini 2.5 Flash** and **Groq Llama 3.3 70B**, SnapMini delivers answers in a modern, frameless, auto-dismissing dark SaaS popup.
+Powered by native **Windows OCR** and support for **Google Gemini**, **Groq Cloud**, and **OpenRouter AI Gateway**, SnapMini delivers answers in a modern, frameless, auto-dismissing dark SaaS popup.
 
 ---
 
@@ -12,13 +12,20 @@ Powered by native **Windows OCR** and support for both **Google Gemini 2.5 Flash
   * **`Ctrl + Alt + A`**: Highlight any text in your browser, PDF, or editor -> press `Ctrl+Alt+A` -> Get instant AI answer!
   * **`Ctrl + Alt + S`**: Press `Ctrl+Alt+S` -> Windows Snipping Tool opens -> snip any screen area -> Instant OCR + AI answer!
 * 👁️ **Native Windows OCR (`Windows.Media.Ocr`)**: High-speed, on-device text recognition with zero 3rd-party binary dependencies.
-* 🤖 **Dual AI Provider Engine**: Switch seamlessly between **Google Gemini** (`gemini-2.5-flash`) and **Groq** (`llama-3.3-70b-versatile`) via `appsettings.json`.
-* 🎨 **Linear/Stripe-Inspired Dark UI**:
-  * Frameless dark glass UI (`#0F172A`) with deep drop shadows.
-  * **5-Way Screen Position Picker**: Position the popup at `Top-Left ↖`, `Top-Right ↗`, `Center ⊹`, `Bottom-Left ↙`, or `Bottom-Right ↘`. Automatically remembers your choice!
-  * **Pause / Resume Timer**: Pause the 25-second auto-dismiss countdown anytime.
+* 🤖 **Multi-Provider AI Engine (Gemini, Groq & OpenRouter)**:
+  * **Google Gemini**: `Gemini 2.5 Flash`, `Gemini 1.5 Flash`, `Gemini 1.5 Pro`
+  * **Groq Cloud**: `Llama 3.3 70B`, `DeepSeek R1 Distill 70B`, `Mixtral 8x7B`, `Gemma 2 9B`
+  * **OpenRouter Free Models**: `OpenAI GPT-OSS 20B`, `NVIDIA Nemotron 3 Ultra 550B`, `NVIDIA Nemotron 3 Super 120B`
+* ⚙️ **In-App Settings Window (`SettingsWindow.xaml`)**:
+  * Easily switch Providers & Model Versions using dark-themed dropdown controls.
+  * **Hidden API Keys**: Input fields are secured with `PasswordBox` and interactive `👁️` Show/Hide eye toggles.
+  * **Customizable System Prompt**: Edit the prompt template sent before your text/OCR input, or click "Reset Default" anytime.
+* 🎨 **Linear/Stripe-Inspired Dark SaaS UI (`AnswerWindow.xaml`)**:
+  * Frameless dark glass UI (`#0F172A`) with deep drop shadows and app icon branding.
+  * **5-Way Screen Position Picker**: Position the popup at `Top-Left ↖`, `Top-Right ↗`, `Center ⊹`, `Bottom-Left ↙`, or `Bottom-Right ↘`. Choice is saved directly in `appsettings.json`.
+  * **Pause / Resume Timer**: Freeze or resume the 25-second auto-dismiss countdown timer anytime.
   * **One-Click Copy**: Copy AI answers to your clipboard with instant feedback.
-* 📌 **System Tray Integration**: Custom **`SM_icon`** in the Windows Taskbar tray with right-click Exit controls.
+* 📌 **System Tray Integration**: Custom **`SM_icon`** in the Windows Taskbar tray with right-click Settings and Exit controls.
 
 ---
 
@@ -33,22 +40,27 @@ Powered by native **Windows OCR** and support for both **Google Gemini 2.5 Flash
 
 ## ⚙️ Configuration & Setup (`appsettings.json`)
 
-Create `appsettings.json` in the root folder to set your API Keys and choose your AI Provider:
+All configuration parameters (API Keys, Active Model, System Prompt, and Screen Position) are stored in **`appsettings.json`**:
 
 ```json
 {
   "Provider": "Gemini",
-  "GeminiApiKey": "your_google_gemini_api_key_here",
-  "GroqApiKey": "your_groq_api_key_here"
+  "GeminiModel": "gemini-2.5-flash",
+  "GroqModel": "llama-3.3-70b-versatile",
+  "OpenRouterModel": "openai/gpt-oss-20b:free",
+  "GeminiApiKey": "your_gemini_api_key_here",
+  "GroqApiKey": "your_groq_api_key_here",
+  "OpenRouterApiKey": "your_openrouter_api_key_here",
+  "SystemPrompt": "The following text was captured from the user's screen or selected text...",
+  "WindowPosition": "TopRight"
 }
 ```
 
-* Set `"Provider": "Gemini"` to use **Google Gemini 2.5 Flash**.
-* Set `"Provider": "Groq"` to use **Groq Llama 3.3 70B**.
+> 💡 **Tip:** You don't need to edit JSON manually — open the Settings window (⚙️) inside SnapMini or from the System Tray to change options visually!
 
 ---
 
-## 🚀 Running the Project
+## 🚀 Running & Publishing
 
 ### Prerequisites
 1. Windows 10 or 11
@@ -56,14 +68,11 @@ Create `appsettings.json` in the root folder to set your API Keys and choose you
 
 ### Run from Terminal
 ```powershell
-cd C:\Users\NwicK\Desktop\SnapMini
+cd /path/to/SnapMini
 dotnet run
 ```
 
----
-
-## 📦 Publishing a Standalone `.exe`
-
+### Publish Standalone `.exe`
 To build a single standalone `SnapMini.exe` executable with embedded custom branding (`SM_icon`):
 
 ```powershell
@@ -89,16 +98,19 @@ SnapMini/
 ├── 📁 Properties/
 │   └── AssemblyInfo.cs        # Assembly & WPF theme metadata
 ├── 📁 Services/
-│   ├── AIService.cs           # AI Provider Dispatcher (Gemini vs. Groq)
+│   ├── AIService.cs           # Central AI Dispatcher & appsettings.json Manager
 │   ├── GeminiService.cs       # Google Gemini REST API client
 │   ├── GroqService.cs         # Groq OpenAI-compatible REST API client
+│   ├── OpenRouterService.cs   # OpenRouter AI Gateway REST API client
 │   └── OcrService.cs          # Native Windows.Media.Ocr text extraction
 ├── 📁 Views/
-│   ├── AnswerWindow.xaml      # Modern dark SaaS popup layout
-│   └── AnswerWindow.xaml.cs   # Position picker engine, timer & copy logic
-├── 📁 Images/                 # SM_logo.png, SM_icon.png, SM_icon.ico
+│   ├── AnswerWindow.xaml      # Modern dark SaaS popup layout (660px width, pause control)
+│   ├── AnswerWindow.xaml.cs   # Screen position picker engine & timer logic
+│   ├── SettingsWindow.xaml    # Dark SaaS Settings UI (Provider, Models, Keys, Prompt)
+│   └── SettingsWindow.xaml.cs # Settings UI event handling & password eye toggles
+├── 📁 Images/                 # SM_logo.png, SM_logo.png, SM_icon.ico
 ├── ⚙️ App.xaml & App.xaml.cs  # Application entry point & System Tray setup
-├── 🔑 appsettings.json        # Secret API key & Provider configuration
+├── 🔑 appsettings.json        # Unified application settings file
 └── 📦 SnapMini.csproj         # .NET 8 Project file
 ```
 
@@ -106,4 +118,4 @@ SnapMini/
 
 ## 🛡️ License & Credits
 
-Built with C# .NET 8 WPF. Native OCR provided by `Windows.Media.Ocr`. AI Inference powered by Google Gemini API & Groq Cloud.
+Built with C# .NET 8 WPF. Native OCR provided by `Windows.Media.Ocr`. AI Inference powered by Google Gemini API, Groq Cloud & OpenRouter.
