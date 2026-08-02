@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using SnapMini.Services;
@@ -11,14 +12,15 @@ namespace SnapMini.Views
 {
     /// <summary>
     /// Code-behind for AnswerWindow. Includes screen position picker (Top-Left, Top-Right, Center, Bottom-Left, Bottom-Right),
-    /// displays Images/SM_logo.png in the header bar, provides Pause/Resume control for auto-close timer, and Settings access.
-    /// Position state is persisted directly in appsettings.json.
+    /// displays Images/SM_logo.png in the header bar, configurable auto-close timer with smooth fade-out animation, and Settings access.
+    /// Position state and timer duration are persisted directly in appsettings.json.
     /// </summary>
     public partial class AnswerWindow : Window
     {
-        private readonly DispatcherTimer _timer;
+        private readonly DispatcherTimer? _timer;
         private int _ticksRemaining = 250;
         private bool _isPaused = false;
+        private bool _isClosing = false;
 
         public AnswerWindow(string questionText, string answerText, string modelName = "")
         {
@@ -30,26 +32,58 @@ namespace SnapMini.Views
 
             LoadLogoImage();
 
-            // Progress bar and auto-close timer (updates every 100ms)
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(100)
-            };
-            _timer.Tick += (sender, e) =>
-            {
-                _ticksRemaining--;
-                AutoCloseProgress.Value = _ticksRemaining;
-                TimerLabel.Text = $"Auto closing in {(_ticksRemaining / 10) + 1}s";
+            // Read user's custom AutoCloseSeconds from appsettings.json
+            var settings = AIService.ReadSettings();
+            int autoCloseSec = settings.AutoCloseSeconds;
 
-                if (_ticksRemaining <= 0)
+            if (autoCloseSec <= 0)
+            {
+                // Disable auto-close timer completely if set to 0
+                AutoCloseProgress.Visibility = Visibility.Collapsed;
+                PauseBtn.Visibility = Visibility.Collapsed;
+                TimerLabel.Text = "Manual close mode";
+            }
+            else
+            {
+                _ticksRemaining = autoCloseSec * 10;
+                AutoCloseProgress.Maximum = autoCloseSec * 10;
+                AutoCloseProgress.Value = autoCloseSec * 10;
+
+                _timer = new DispatcherTimer
                 {
-                    _timer.Stop();
-                    Close();
-                }
-            };
+                    Interval = TimeSpan.FromMilliseconds(100)
+                };
+                _timer.Tick += (sender, e) =>
+                {
+                    _ticksRemaining--;
+                    AutoCloseProgress.Value = _ticksRemaining;
+                    TimerLabel.Text = $"Auto closing in {(_ticksRemaining / 10) + 1}s";
 
-            // Start timer automatically by default
-            _timer.Start();
+                    if (_ticksRemaining <= 0)
+                    {
+                        _timer.Stop();
+                        StartFadeOutAndClose();
+                    }
+                };
+
+                _timer.Start();
+            }
+        }
+
+        private void StartFadeOutAndClose()
+        {
+            if (_isClosing) return;
+            _isClosing = true;
+            _timer?.Stop();
+
+            var fadeAnimation = new DoubleAnimation
+            {
+                From = 1.0,
+                To = 0.0,
+                Duration = TimeSpan.FromMilliseconds(300)
+            };
+            fadeAnimation.Completed += (s, args) => Close();
+            BeginAnimation(Window.OpacityProperty, fadeAnimation);
         }
 
         private void SettingsButton_Click(object sender, MouseButtonEventArgs e)
@@ -71,6 +105,8 @@ namespace SnapMini.Views
 
         private void PauseButton_Click(object sender, MouseButtonEventArgs e)
         {
+            if (_timer == null) return;
+
             if (!_isPaused)
             {
                 // Pause timer
@@ -234,8 +270,7 @@ namespace SnapMini.Views
 
         private void CloseButton_Click(object sender, MouseButtonEventArgs e)
         {
-            _timer.Stop();
-            Close();
+            StartFadeOutAndClose();
         }
     }
 }

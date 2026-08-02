@@ -7,7 +7,7 @@ namespace SnapMini.Services
 {
     /// <summary>
     /// AI Dispatcher & Configuration Manager. 
-    /// Manages model presets, API Keys, system prompt customization, and window position persistence in appsettings.json.
+    /// Manages model presets, API Keys, system prompt customization, window position, and auto-close timer duration in appsettings.json.
     /// </summary>
     public static class AIService
     {
@@ -89,6 +89,7 @@ namespace SnapMini.Services
             public string OpenRouterApiKey { get; set; } = "";
             public string SystemPrompt { get; set; } = DefaultSystemPrompt;
             public string WindowPosition { get; set; } = "TopRight";
+            public int AutoCloseSeconds { get; set; } = 25;
         }
 
         public static AISettings ReadSettings()
@@ -114,6 +115,7 @@ namespace SnapMini.Services
                     if (root.TryGetProperty("OpenRouterApiKey", out var ok)) settings.OpenRouterApiKey = ok.GetString() ?? "";
                     if (root.TryGetProperty("SystemPrompt", out var sp)) settings.SystemPrompt = sp.GetString() ?? DefaultSystemPrompt;
                     if (root.TryGetProperty("WindowPosition", out var wp)) settings.WindowPosition = wp.GetString() ?? "TopRight";
+                    if (root.TryGetProperty("AutoCloseSeconds", out var acs)) settings.AutoCloseSeconds = acs.GetInt32();
 
                     return settings;
                 }
@@ -138,7 +140,8 @@ namespace SnapMini.Services
                     GroqApiKey = settings.GroqApiKey,
                     OpenRouterApiKey = settings.OpenRouterApiKey,
                     SystemPrompt = settings.SystemPrompt,
-                    WindowPosition = settings.WindowPosition
+                    WindowPosition = settings.WindowPosition,
+                    AutoCloseSeconds = settings.AutoCloseSeconds
                 };
 
                 string json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
