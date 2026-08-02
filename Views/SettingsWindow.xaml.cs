@@ -8,7 +8,8 @@ namespace SnapMini.Views
 {
     /// <summary>
     /// Code-behind for SettingsWindow. Handles provider switching (Gemini, Groq, OpenRouter),
-    /// model preset dropdowns, hidden API key PasswordBoxes with eye toggles, and custom system prompt editing.
+    /// model preset dropdowns, hidden API key PasswordBoxes with eye toggles, custom system prompt editing,
+    /// and auto-close timer duration.
     /// </summary>
     public partial class SettingsWindow : Window
     {
@@ -87,6 +88,7 @@ namespace SnapMini.Views
             OpenRouterKeyText.Text = settings.OpenRouterApiKey;
 
             SystemPromptBox.Text = string.IsNullOrWhiteSpace(settings.SystemPrompt) ? AIService.DefaultSystemPrompt : settings.SystemPrompt;
+            AutoCloseBox.Text = settings.AutoCloseSeconds >= 0 ? settings.AutoCloseSeconds.ToString() : "25";
         }
 
         private void ToggleGeminiEye_Click(object sender, MouseButtonEventArgs e)
@@ -199,6 +201,15 @@ namespace SnapMini.Views
                 settings.GroqApiKey = (_isGroqVisible ? GroqKeyText.Text : GroqKeyPass.Password).Trim();
                 settings.OpenRouterApiKey = (_isOpenRouterVisible ? OpenRouterKeyText.Text : OpenRouterKeyPass.Password).Trim();
                 settings.SystemPrompt = SystemPromptBox.Text.Trim();
+
+                if (int.TryParse(AutoCloseBox.Text.Trim(), out int timerSec) && timerSec >= 0)
+                {
+                    settings.AutoCloseSeconds = timerSec;
+                }
+                else
+                {
+                    settings.AutoCloseSeconds = 25;
+                }
 
                 AIService.SaveSettings(settings);
                 Close();
