@@ -98,6 +98,19 @@ namespace SnapMini.Services
             };
         }
 
+        public class QuickActionTag
+        {
+            public string Label { get; set; } = "";
+            public string Prompt { get; set; } = "";
+        }
+
+        public static System.Collections.Generic.List<QuickActionTag> GetDefaultQuickActions() => new()
+        {
+            new QuickActionTag { Label = "💡 Simpler", Prompt = "Could you explain this in simpler terms with a clear summary?" },
+            new QuickActionTag { Label = "📝 Examples", Prompt = "Can you provide a couple of practical real-world examples illustrating this?" },
+            new QuickActionTag { Label = "📌 Key Points", Prompt = "Summarize the key takeaways into concise bullet points." }
+        };
+
         public class AISettings
         {
             public string Provider { get; set; } = "Gemini";
@@ -109,7 +122,10 @@ namespace SnapMini.Services
             public string OpenRouterApiKey { get; set; } = "";
             public string SystemPrompt { get; set; } = DefaultSystemPrompt;
             public string WindowPosition { get; set; } = "TopRight";
+            public int WindowWidth { get; set; } = 680;
+            public int WindowHeight { get; set; } = 580;
             public int AutoCloseSeconds { get; set; } = 25;
+            public System.Collections.Generic.List<QuickActionTag> QuickActions { get; set; } = GetDefaultQuickActions();
         }
 
         public static AISettings ReadSettings()
@@ -135,7 +151,27 @@ namespace SnapMini.Services
                     if (root.TryGetProperty("OpenRouterApiKey", out var ok)) settings.OpenRouterApiKey = ok.GetString() ?? "";
                     if (root.TryGetProperty("SystemPrompt", out var sp)) settings.SystemPrompt = sp.GetString() ?? DefaultSystemPrompt;
                     if (root.TryGetProperty("WindowPosition", out var wp)) settings.WindowPosition = wp.GetString() ?? "TopRight";
+                    if (root.TryGetProperty("WindowWidth", out var ww)) settings.WindowWidth = ww.GetInt32();
+                    if (root.TryGetProperty("WindowHeight", out var wh)) settings.WindowHeight = wh.GetInt32();
                     if (root.TryGetProperty("AutoCloseSeconds", out var acs)) settings.AutoCloseSeconds = acs.GetInt32();
+
+                    if (root.TryGetProperty("QuickActions", out var qaArray) && qaArray.ValueKind == JsonValueKind.Array)
+                    {
+                        var list = new System.Collections.Generic.List<QuickActionTag>();
+                        foreach (var elem in qaArray.EnumerateArray())
+                        {
+                            string lbl = elem.TryGetProperty("Label", out var l) ? l.GetString() ?? "" : "";
+                            string prm = elem.TryGetProperty("Prompt", out var pr) ? pr.GetString() ?? "" : "";
+                            if (!string.IsNullOrWhiteSpace(lbl))
+                            {
+                                list.Add(new QuickActionTag { Label = lbl, Prompt = prm });
+                            }
+                        }
+                        if (list.Count > 0)
+                        {
+                            settings.QuickActions = list;
+                        }
+                    }
 
                     return settings;
                 }
@@ -161,7 +197,10 @@ namespace SnapMini.Services
                     OpenRouterApiKey = settings.OpenRouterApiKey,
                     SystemPrompt = settings.SystemPrompt,
                     WindowPosition = settings.WindowPosition,
-                    AutoCloseSeconds = settings.AutoCloseSeconds
+                    WindowWidth = settings.WindowWidth > 0 ? settings.WindowWidth : 680,
+                    WindowHeight = settings.WindowHeight > 0 ? settings.WindowHeight : 580,
+                    AutoCloseSeconds = settings.AutoCloseSeconds,
+                    QuickActions = settings.QuickActions ?? GetDefaultQuickActions()
                 };
 
                 string json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });

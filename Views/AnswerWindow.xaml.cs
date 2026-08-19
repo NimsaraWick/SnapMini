@@ -15,9 +15,8 @@ namespace SnapMini.Views
 {
     /// <summary>
     /// Code-behind for AnswerWindow. Includes multi-turn follow-up chat conversation,
-    /// screen position picker (Top-Left, Top-Right, Center, Bottom-Left, Bottom-Right),
-    /// displays Images/SM_logo.png in the header bar, configurable auto-close timer with smooth fade-out,
-    /// and quick action suggestion pills.
+    /// dynamic custom quick action tags configured from Settings, screen position picker,
+    /// configurable auto-close timer with smooth fade-out, and branding.
     /// </summary>
     public partial class AnswerWindow : Window
     {
@@ -43,6 +42,7 @@ namespace SnapMini.Views
             _chatHistory.Add(new AIService.ChatMessage { Role = "assistant", Content = _initialAnswerText });
 
             LoadLogoImage();
+            LoadQuickActionTags();
 
             // Read user's custom AutoCloseSeconds from appsettings.json
             var settings = AIService.ReadSettings();
@@ -82,6 +82,78 @@ namespace SnapMini.Views
             }
         }
 
+        #region Dynamic Quick Action Tags
+
+        private void LoadQuickActionTags()
+        {
+            QuickActionsContainer.Children.Clear();
+            var settings = AIService.ReadSettings();
+            var tags = settings.QuickActions ?? AIService.GetDefaultQuickActions();
+
+            if (tags.Count == 0) return;
+
+            var titleBlock = new TextBlock
+            {
+                Text = "Quick Actions:",
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B")),
+                FontSize = 11,
+                FontWeight = FontWeights.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 6, 0)
+            };
+            QuickActionsContainer.Children.Add(titleBlock);
+
+            foreach (var tag in tags)
+            {
+                if (string.IsNullOrWhiteSpace(tag.Label) || string.IsNullOrWhiteSpace(tag.Prompt))
+                    continue;
+
+                var pill = new Border
+                {
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B")),
+                    BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155")),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(10),
+                    Padding = new Thickness(8, 2, 8, 2),
+                    Margin = new Thickness(0, 0, 5, 0),
+                    Cursor = Cursors.Hand,
+                    ToolTip = tag.Prompt
+                };
+
+                var text = new TextBlock
+                {
+                    Text = tag.Label,
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")),
+                    FontSize = 11
+                };
+                pill.Child = text;
+
+                // Smooth hover feedback
+                pill.MouseEnter += (s, e) =>
+                {
+                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
+                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+                    text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8FAFC"));
+                };
+                pill.MouseLeave += (s, e) =>
+                {
+                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
+                    text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8"));
+                };
+
+                string promptToSend = tag.Prompt;
+                pill.MouseLeftButtonDown += (s, e) =>
+                {
+                    _ = SubmitFollowUpMessageAsync(promptToSend);
+                };
+
+                QuickActionsContainer.Children.Add(pill);
+            }
+        }
+
+        #endregion
+
         #region Follow-up Chat Engine
 
         private void ChatInputBox_GotFocus(object sender, RoutedEventArgs e)
@@ -108,11 +180,6 @@ namespace SnapMini.Views
         {
             _ = SubmitFollowUpMessageAsync();
         }
-
-        private void QuickPrompt_Simpler(object sender, MouseButtonEventArgs e) => _ = SubmitFollowUpMessageAsync("Could you explain this in simpler terms with a clear summary?");
-        private void QuickPrompt_Examples(object sender, MouseButtonEventArgs e) => _ = SubmitFollowUpMessageAsync("Can you provide a couple of practical real-world examples illustrating this?");
-        private void QuickPrompt_Grammar(object sender, MouseButtonEventArgs e) => _ = SubmitFollowUpMessageAsync("Please break down the sentence structure and key grammar/vocabulary used here.");
-        private void QuickPrompt_BulletPoints(object sender, MouseButtonEventArgs e) => _ = SubmitFollowUpMessageAsync("Summarize the key takeaways into concise bullet points.");
 
         private async System.Threading.Tasks.Task SubmitFollowUpMessageAsync(string? explicitPrompt = null)
         {
@@ -225,19 +292,44 @@ namespace SnapMini.Views
 
         private void SettingsButton_Click(object sender, MouseButtonEventArgs e)
         {
-            var settingsWin = new SettingsWindow();
+            int originalW = (int)this.Width;
+            int originalH = (int)this.Height;
+            string currentPos = ReadSavedPosition();
+
+            var settingsWin = new SettingsWindow
+            {
+                OnSizePreview = (w, h) =>
+                {
+                    this.Width = w;
+                    this.Height = h;
+                    this.ApplyPosition(currentPos, w, h);
+                }
+            };
+
             settingsWin.ShowDialog();
 
-            // Refresh active model badge text
-            var settings = AIService.ReadSettings();
-            string provider = settings.Provider;
-            string modelId = provider switch
+            if (!settingsWin.IsSaved)
             {
-                "OpenRouter" => settings.OpenRouterModel,
-                "Groq" => settings.GroqModel,
-                _ => settings.GeminiModel
-            };
-            ModelTagText.Text = AIService.GetModelDisplayName(provider, modelId);
+                // Revert to original size if user cancelled or closed without saving
+                this.Width = originalW;
+                this.Height = originalH;
+                ApplyPosition(currentPos, originalW, originalH);
+            }
+            else
+            {
+                // Refresh active model badge text, dynamic quick actions, and size
+                var settings = AIService.ReadSettings();
+                string provider = settings.Provider;
+                string modelId = provider switch
+                {
+                    "OpenRouter" => settings.OpenRouterModel,
+                    "Groq" => settings.GroqModel,
+                    _ => settings.GeminiModel
+                };
+                ModelTagText.Text = AIService.GetModelDisplayName(provider, modelId);
+                LoadQuickActionTags();
+                ApplyPosition(ReadSavedPosition());
+            }
         }
 
         private void LoadLogoImage()
@@ -281,8 +373,28 @@ namespace SnapMini.Views
             catch { }
         }
 
-        private void ApplyPosition(string positionName)
+        private void ApplyPosition(string positionName, double? customWidth = null, double? customHeight = null)
         {
+            if (customWidth.HasValue && customWidth.Value >= 400)
+            {
+                Width = customWidth.Value;
+            }
+            else
+            {
+                var settings = AIService.ReadSettings();
+                if (settings.WindowWidth >= 400) Width = settings.WindowWidth;
+            }
+
+            if (customHeight.HasValue && customHeight.Value >= 300)
+            {
+                Height = customHeight.Value;
+            }
+            else
+            {
+                var settings = AIService.ReadSettings();
+                if (settings.WindowHeight >= 300) Height = settings.WindowHeight;
+            }
+
             var workArea = SystemParameters.WorkArea;
             double padding = 8;
 
@@ -365,7 +477,6 @@ namespace SnapMini.Views
                 }
                 else
                 {
-                    // Copy the latest assistant response or all conversation if available
                     var lastAssistant = _chatHistory.FindLast(m => m.Role == "assistant");
                     textToCopy = lastAssistant?.Content ?? _initialAnswerText;
                 }

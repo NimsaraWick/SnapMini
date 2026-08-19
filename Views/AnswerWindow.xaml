@@ -136,23 +136,10 @@
 
             <!-- 3. Interactive Follow-up Chat Input Bar -->
             <StackPanel Grid.Row="3" Margin="16,0,16,8">
-                <!-- Quick Prompt Suggestion Pills -->
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                    <TextBlock Text="Ask Follow-up:" Foreground="#64748B" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                    
-                    <Border MouseLeftButtonDown="QuickPrompt_Simpler" Cursor="Hand" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="7,2" Margin="0,0,5,0">
-                        <TextBlock Text="💡 Simpler" Foreground="#94A3B8" FontSize="11"/>
-                    </Border>
-                    <Border MouseLeftButtonDown="QuickPrompt_Examples" Cursor="Hand" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="7,2" Margin="0,0,5,0">
-                        <TextBlock Text="📝 Examples" Foreground="#94A3B8" FontSize="11"/>
-                    </Border>
-                    <Border MouseLeftButtonDown="QuickPrompt_Grammar" Cursor="Hand" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="7,2" Margin="0,0,5,0">
-                        <TextBlock Text="📖 Grammar" Foreground="#94A3B8" FontSize="11"/>
-                    </Border>
-                    <Border MouseLeftButtonDown="QuickPrompt_BulletPoints" Cursor="Hand" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="7,2">
-                        <TextBlock Text="📌 Key Points" Foreground="#94A3B8" FontSize="11"/>
-                    </Border>
-                </StackPanel>
+                <!-- Dynamic Quick Action Tags Container (Loaded from Settings) -->
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,6">
+                    <StackPanel x:Name="QuickActionsContainer" Orientation="Horizontal"/>
+                </ScrollViewer>
 
                 <!-- Input Box + Send Button Container -->
                 <Border Background="#1E293B" CornerRadius="10" BorderBrush="#334155" BorderThickness="1" Padding="4,2">
