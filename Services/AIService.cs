@@ -17,9 +17,18 @@ namespace SnapMini.Services
         public static string CurrentModelDisplayName { get; private set; } = "Gemini 2.5 Flash";
 
         /// <summary>
-        /// Reads settings and dispatches prompt & input text to the selected AI model provider.
+        /// Represents a message in a multi-turn conversation.
         /// </summary>
-        public static async Task<string> GetAnswerAsync(string inputText)
+        public class ChatMessage
+        {
+            public string Role { get; set; } = "user"; // "user" or "assistant"
+            public string Content { get; set; } = "";
+        }
+
+        /// <summary>
+        /// Reads settings and dispatches full multi-turn chat history to the selected AI model provider.
+        /// </summary>
+        public static async Task<string> GetChatResponseAsync(System.Collections.Generic.List<ChatMessage> messages)
         {
             var settings = ReadSettings();
 
@@ -31,22 +40,33 @@ namespace SnapMini.Services
                 CurrentProviderName = "OpenRouter";
                 string openRouterModel = string.IsNullOrWhiteSpace(settings.OpenRouterModel) ? "openai/gpt-oss-20b:free" : settings.OpenRouterModel;
                 CurrentModelDisplayName = GetModelDisplayName("OpenRouter", openRouterModel);
-                return await OpenRouterService.GetAnswerAsync(inputText, openRouterModel, systemPrompt);
+                return await OpenRouterService.GetChatResponseAsync(messages, openRouterModel, systemPrompt);
             }
             else if (provider.Equals("Groq", StringComparison.OrdinalIgnoreCase))
             {
                 CurrentProviderName = "Groq";
                 string groqModel = string.IsNullOrWhiteSpace(settings.GroqModel) ? "llama-3.3-70b-versatile" : settings.GroqModel;
                 CurrentModelDisplayName = GetModelDisplayName("Groq", groqModel);
-                return await GroqService.GetAnswerAsync(inputText, groqModel, systemPrompt);
+                return await GroqService.GetChatResponseAsync(messages, groqModel, systemPrompt);
             }
             else
             {
                 CurrentProviderName = "Gemini";
                 string geminiModel = string.IsNullOrWhiteSpace(settings.GeminiModel) ? "gemini-2.5-flash" : settings.GeminiModel;
                 CurrentModelDisplayName = GetModelDisplayName("Gemini", geminiModel);
-                return await GeminiService.GetAnswerAsync(inputText, geminiModel, systemPrompt);
+                return await GeminiService.GetChatResponseAsync(messages, geminiModel, systemPrompt);
             }
+        }
+
+        /// <summary>
+        /// Reads settings and dispatches a single prompt & input text to the selected AI model provider.
+        /// </summary>
+        public static async Task<string> GetAnswerAsync(string inputText)
+        {
+            return await GetChatResponseAsync(new System.Collections.Generic.List<ChatMessage>
+            {
+                new ChatMessage { Role = "user", Content = inputText }
+            });
         }
 
         public static string GetModelDisplayName(string provider, string modelId)

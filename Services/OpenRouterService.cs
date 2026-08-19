@@ -53,29 +53,32 @@ namespace SnapMini.Services
         }
 
         /// <summary>
-        /// Sends prompt & text to OpenRouter REST API endpoint.
+        /// Sends multi-turn chat history to OpenRouter REST API endpoint.
         /// </summary>
-        public static async Task<string> GetAnswerAsync(string inputText, string modelName = "deepseek/deepseek-r1:free", string? customPrompt = null)
+        public static async Task<string> GetChatResponseAsync(System.Collections.Generic.List<AIService.ChatMessage> messages, string modelName = "openai/gpt-oss-20b:free", string? customPrompt = null)
         {
             string apiKey = GetApiKey();
+            string promptHeader = string.IsNullOrWhiteSpace(customPrompt) ? AIService.DefaultSystemPrompt : customPrompt;
+            string targetModel = string.IsNullOrWhiteSpace(modelName) ? "openai/gpt-oss-20b:free" : modelName;
 
-            string promptHeader = string.IsNullOrWhiteSpace(customPrompt) 
-                ? AIService.DefaultSystemPrompt 
-                : customPrompt;
+            var msgsList = new System.Collections.Generic.List<object>
+            {
+                new { role = "system", content = promptHeader }
+            };
 
-            string targetModel = string.IsNullOrWhiteSpace(modelName) ? "deepseek/deepseek-r1:free" : modelName;
+            foreach (var msg in messages)
+            {
+                msgsList.Add(new
+                {
+                    role = msg.Role.Equals("assistant", StringComparison.OrdinalIgnoreCase) ? "assistant" : "user",
+                    content = msg.Content
+                });
+            }
 
             var payload = new
             {
                 model = targetModel,
-                messages = new[]
-                {
-                    new
-                    {
-                        role = "user",
-                        content = promptHeader + "\n\n---\n" + inputText + "\n---"
-                    }
-                }
+                messages = msgsList
             };
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "https://openrouter.ai/api/v1/chat/completions");
@@ -108,6 +111,14 @@ namespace SnapMini.Services
             }
 
             return "Could not parse response from OpenRouter API.";
+        }
+
+        public static async Task<string> GetAnswerAsync(string inputText, string modelName = "openai/gpt-oss-20b:free", string? customPrompt = null)
+        {
+            return await GetChatResponseAsync(new System.Collections.Generic.List<AIService.ChatMessage>
+            {
+                new AIService.ChatMessage { Role = "user", Content = inputText }
+            }, modelName, customPrompt);
         }
     }
 }

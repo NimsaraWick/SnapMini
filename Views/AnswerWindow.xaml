@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SnapMini AI"
-        Height="540" Width="660"
+        Height="580" Width="680"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
@@ -20,13 +20,14 @@
 
         <Grid x:Name="MainGrid">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/> <!-- Header -->
-                <RowDefinition Height="Auto"/> <!-- Question Card -->
-                <RowDefinition Height="*"/>    <!-- Answer Card -->
-                <RowDefinition Height="Auto"/> <!-- Footer -->
+                <RowDefinition Height="Auto"/> <!-- 0. Header -->
+                <RowDefinition Height="Auto"/> <!-- 1. Question Card -->
+                <RowDefinition Height="*"/>    <!-- 2. Answer & Chat History Card -->
+                <RowDefinition Height="Auto"/> <!-- 3. Interactive Follow-up Chat Bar -->
+                <RowDefinition Height="Auto"/> <!-- 4. Footer -->
             </Grid.RowDefinitions>
 
-            <!-- 1. Header (Draggable Bar with Position Controls, Model Badge & Settings) -->
+            <!-- 0. Header (Draggable Bar with Position Controls, Model Badge & Settings) -->
             <Border Grid.Row="0" Background="#1E293B" CornerRadius="15,15,0,0" Padding="14,10" MouseDown="Header_MouseDown">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -96,28 +97,110 @@
                 </Grid>
             </Border>
 
-            <!-- 2. Question / Captured Context Card -->
-            <StackPanel Grid.Row="1" Margin="16,12,16,8">
-                <TextBlock Text="CAPTURED CONTEXT" Foreground="#64748B" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
-                <Border Background="#1E293B" CornerRadius="10" BorderBrush="#334155" BorderThickness="1" Padding="10,8">
-                    <TextBox x:Name="QuestionBox" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="75" 
+            <!-- 1. Question / Captured Context Card -->
+            <StackPanel Grid.Row="1" Margin="16,10,16,6">
+                <TextBlock Text="CAPTURED CONTEXT" Foreground="#64748B" FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                <Border Background="#1E293B" CornerRadius="10" BorderBrush="#334155" BorderThickness="1" Padding="10,6">
+                    <TextBox x:Name="QuestionBox" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="60" 
                              Background="Transparent" Foreground="#94A3B8" BorderThickness="0"
-                             FontSize="13" FontFamily="Segoe UI" VerticalScrollBarVisibility="Auto"/>
+                             FontSize="12.5" FontFamily="Segoe UI" VerticalScrollBarVisibility="Auto"
+                             SelectionBrush="#6366F1" SelectionOpacity="0.5"/>
                 </Border>
             </StackPanel>
 
-            <!-- 3. Answer Card -->
-            <DockPanel Grid.Row="2" Margin="16,4,16,12">
-                <TextBlock Text="AI RESPONSE" DockPanel.Dock="Top" Foreground="#818CF8" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
-                <Border Background="#1E293B" CornerRadius="12" BorderBrush="#334155" BorderThickness="1" Padding="14,12">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <TextBlock x:Name="AnswerText" TextWrapping="Wrap" Foreground="#F8FAFC" FontSize="14" LineHeight="22" FontFamily="Segoe UI"/>
-                    </ScrollViewer>
+            <!-- 2. Answer & Chat History Card -->
+            <DockPanel Grid.Row="2" Margin="16,4,16,8">
+                <TextBlock Text="AI CONVERSATION" DockPanel.Dock="Top" Foreground="#818CF8" FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                <Border Background="#1E293B" CornerRadius="12" BorderBrush="#334155" BorderThickness="1" Padding="12,10">
+                    <RichTextBox x:Name="AnswerBox" 
+                                 IsReadOnly="True" 
+                                 IsDocumentEnabled="True"
+                                 Background="Transparent" 
+                                 Foreground="#F8FAFC" 
+                                 BorderThickness="0"
+                                 FontSize="14" 
+                                 FontFamily="Segoe UI"
+                                 VerticalScrollBarVisibility="Auto"
+                                 SelectionBrush="#6366F1"
+                                 SelectionOpacity="0.5"
+                                 Cursor="IBeam">
+                        <RichTextBox.Resources>
+                            <Style TargetType="{x:Type Paragraph}">
+                                <Setter Property="Margin" Value="0,0,0,8"/>
+                                <Setter Property="LineHeight" Value="22"/>
+                            </Style>
+                        </RichTextBox.Resources>
+                    </RichTextBox>
                 </Border>
             </DockPanel>
 
+            <!-- 3. Interactive Follow-up Chat Input Bar -->
+            <StackPanel Grid.Row="3" Margin="16,0,16,8">
+                <!-- Quick Prompt Suggestion Pills -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                    <TextBlock Text="Ask Follow-up:" Foreground="#64748B" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    
+                    <Border MouseLeftButtonDown="QuickPrompt_Simpler" Cursor="Hand" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="7,2" Margin="0,0,5,0">
+                        <TextBlock Text="💡 Simpler" Foreground="#94A3B8" FontSize="11"/>
+                    </Border>
+                    <Border MouseLeftButtonDown="QuickPrompt_Examples" Cursor="Hand" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="7,2" Margin="0,0,5,0">
+                        <TextBlock Text="📝 Examples" Foreground="#94A3B8" FontSize="11"/>
+                    </Border>
+                    <Border MouseLeftButtonDown="QuickPrompt_Grammar" Cursor="Hand" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="7,2" Margin="0,0,5,0">
+                        <TextBlock Text="📖 Grammar" Foreground="#94A3B8" FontSize="11"/>
+                    </Border>
+                    <Border MouseLeftButtonDown="QuickPrompt_BulletPoints" Cursor="Hand" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="7,2">
+                        <TextBlock Text="📌 Key Points" Foreground="#94A3B8" FontSize="11"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Input Box + Send Button Container -->
+                <Border Background="#1E293B" CornerRadius="10" BorderBrush="#334155" BorderThickness="1" Padding="4,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Input Field -->
+                        <TextBox x:Name="ChatInputBox" 
+                                 Background="Transparent" 
+                                 Foreground="#F8FAFC" 
+                                 BorderThickness="0"
+                                 FontSize="13" 
+                                 FontFamily="Segoe UI"
+                                 Padding="8,5"
+                                 VerticalAlignment="Center"
+                                 KeyDown="ChatInputBox_KeyDown"
+                                 GotFocus="ChatInputBox_GotFocus"
+                                 TextChanged="ChatInputBox_TextChanged"
+                                 SelectionBrush="#6366F1"
+                                 SelectionOpacity="0.5"/>
+
+                        <!-- Placeholder Text -->
+                        <TextBlock x:Name="ChatPlaceholder" 
+                                   Text="Ask a follow-up question... (Press Enter)" 
+                                   Foreground="#64748B" 
+                                   FontSize="13" 
+                                   FontFamily="Segoe UI"
+                                   Padding="8,5"
+                                   VerticalAlignment="Center"
+                                   IsHitTestVisible="False"/>
+
+                        <!-- Send Button -->
+                        <Border Grid.Column="1" x:Name="SendBtn" MouseLeftButtonDown="SendButton_Click" Cursor="Hand" 
+                                Background="#6366F1" CornerRadius="8" Padding="10,5" Margin="2" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="SendBtnIcon" Text="➤" Foreground="#FFFFFF" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="SendBtnText" Text="Send" Foreground="#FFFFFF" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
             <!-- 4. Footer Progress Bar, Pause Control & Auto-close status -->
-            <Border Grid.Row="3" Background="#0F172A" CornerRadius="0,0,15,15" Padding="16,8,16,12">
+            <Border Grid.Row="4" Background="#0F172A" CornerRadius="0,0,15,15" Padding="16,6,16,10">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>

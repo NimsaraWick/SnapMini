@@ -52,28 +52,31 @@ namespace SnapMini.Services
                 "Groq API Key missing! Please set your key inside appsettings.json or open Settings (⚙️).");
         }
 
-        public static async Task<string> GetAnswerAsync(string inputText, string modelName = "llama-3.3-70b-versatile", string? customPrompt = null)
+        public static async Task<string> GetChatResponseAsync(System.Collections.Generic.List<AIService.ChatMessage> messages, string modelName = "llama-3.3-70b-versatile", string? customPrompt = null)
         {
             string apiKey = GetApiKey();
-
-            string promptHeader = string.IsNullOrWhiteSpace(customPrompt) 
-                ? AIService.DefaultSystemPrompt 
-                : customPrompt;
-
+            string promptHeader = string.IsNullOrWhiteSpace(customPrompt) ? AIService.DefaultSystemPrompt : customPrompt;
             string targetModel = string.IsNullOrWhiteSpace(modelName) ? "llama-3.3-70b-versatile" : modelName;
+
+            var msgsList = new System.Collections.Generic.List<object>
+            {
+                new { role = "system", content = promptHeader }
+            };
+
+            foreach (var msg in messages)
+            {
+                msgsList.Add(new
+                {
+                    role = msg.Role.Equals("assistant", StringComparison.OrdinalIgnoreCase) ? "assistant" : "user",
+                    content = msg.Content
+                });
+            }
 
             var payload = new
             {
                 model = targetModel,
-                max_tokens = 600,
-                messages = new[]
-                {
-                    new
-                    {
-                        role = "user",
-                        content = promptHeader + "\n\n---\n" + inputText + "\n---"
-                    }
-                }
+                max_tokens = 1000,
+                messages = msgsList
             };
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.groq.com/openai/v1/chat/completions");
@@ -104,6 +107,14 @@ namespace SnapMini.Services
             }
 
             return "Could not parse response from Groq API.";
+        }
+
+        public static async Task<string> GetAnswerAsync(string inputText, string modelName = "llama-3.3-70b-versatile", string? customPrompt = null)
+        {
+            return await GetChatResponseAsync(new System.Collections.Generic.List<AIService.ChatMessage>
+            {
+                new AIService.ChatMessage { Role = "user", Content = inputText }
+            }, modelName, customPrompt);
         }
     }
 }

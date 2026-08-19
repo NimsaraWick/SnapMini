@@ -51,29 +51,37 @@ namespace SnapMini.Services
                 "Gemini API Key missing! Please set your key inside appsettings.json or open Settings (⚙️).");
         }
 
-        public static async Task<string> GetAnswerAsync(string inputText, string modelName = "gemini-2.5-flash", string? customPrompt = null)
+        public static async Task<string> GetChatResponseAsync(System.Collections.Generic.List<AIService.ChatMessage> messages, string modelName = "gemini-2.5-flash", string? customPrompt = null)
         {
             string apiKey = GetApiKey();
+            string promptHeader = string.IsNullOrWhiteSpace(customPrompt) ? AIService.DefaultSystemPrompt : customPrompt;
 
-            string promptHeader = string.IsNullOrWhiteSpace(customPrompt) 
-                ? AIService.DefaultSystemPrompt 
-                : customPrompt;
+            var contentsList = new System.Collections.Generic.List<object>();
+            for (int i = 0; i < messages.Count; i++)
+            {
+                var msg = messages[i];
+                string role = msg.Role.Equals("assistant", StringComparison.OrdinalIgnoreCase) ? "model" : "user";
+                string contentText = msg.Content;
+
+                // Prepend system prompt to the first user message for universal model compatibility
+                if (i == 0 && role == "user")
+                {
+                    contentText = promptHeader + "\n\n---\n" + contentText + "\n---";
+                }
+
+                contentsList.Add(new
+                {
+                    role = role,
+                    parts = new[]
+                    {
+                        new { text = contentText }
+                    }
+                });
+            }
 
             var payload = new
             {
-                contents = new[]
-                {
-                    new
-                    {
-                        parts = new[]
-                        {
-                            new
-                            {
-                                text = promptHeader + "\n\n---\n" + inputText + "\n---"
-                            }
-                        }
-                    }
-                }
+                contents = contentsList
             };
 
             string targetModel = string.IsNullOrWhiteSpace(modelName) ? "gemini-2.5-flash" : modelName;
@@ -109,6 +117,14 @@ namespace SnapMini.Services
             }
 
             return "Could not parse response from Gemini API.";
+        }
+
+        public static async Task<string> GetAnswerAsync(string inputText, string modelName = "gemini-2.5-flash", string? customPrompt = null)
+        {
+            return await GetChatResponseAsync(new System.Collections.Generic.List<AIService.ChatMessage>
+            {
+                new AIService.ChatMessage { Role = "user", Content = inputText }
+            }, modelName, customPrompt);
         }
     }
 }

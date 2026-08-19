@@ -1,19 +1,23 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using SnapMini.Helpers;
 using SnapMini.Services;
 
 namespace SnapMini.Views
 {
     /// <summary>
-    /// Code-behind for AnswerWindow. Includes screen position picker (Top-Left, Top-Right, Center, Bottom-Left, Bottom-Right),
-    /// displays Images/SM_logo.png in the header bar, configurable auto-close timer with smooth fade-out animation, and Settings access.
-    /// Position state and timer duration are persisted directly in appsettings.json.
+    /// Code-behind for AnswerWindow. Includes multi-turn follow-up chat conversation,
+    /// screen position picker (Top-Left, Top-Right, Center, Bottom-Left, Bottom-Right),
+    /// displays Images/SM_logo.png in the header bar, configurable auto-close timer with smooth fade-out,
+    /// and quick action suggestion pills.
     /// </summary>
     public partial class AnswerWindow : Window
     {
@@ -21,14 +25,22 @@ namespace SnapMini.Views
         private int _ticksRemaining = 250;
         private bool _isPaused = false;
         private bool _isClosing = false;
+        private bool _isSending = false;
+        private readonly string _initialAnswerText;
+        private readonly List<AIService.ChatMessage> _chatHistory = new();
 
         public AnswerWindow(string questionText, string answerText, string modelName = "")
         {
             InitializeComponent();
 
+            _initialAnswerText = answerText.Trim();
             QuestionBox.Text = questionText.Trim();
-            AnswerText.Text = answerText.Trim();
+            AnswerBox.Document = MarkdownHelper.ToFlowDocument(_initialAnswerText);
             ModelTagText.Text = string.IsNullOrWhiteSpace(modelName) ? AIService.CurrentModelDisplayName : modelName;
+
+            // Seed multi-turn chat history
+            _chatHistory.Add(new AIService.ChatMessage { Role = "user", Content = questionText.Trim() });
+            _chatHistory.Add(new AIService.ChatMessage { Role = "assistant", Content = _initialAnswerText });
 
             LoadLogoImage();
 
@@ -70,6 +82,131 @@ namespace SnapMini.Views
             }
         }
 
+        #region Follow-up Chat Engine
+
+        private void ChatInputBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            // Auto pause the timer when user clicks into chat to avoid unexpected auto-close
+            PauseTimer();
+        }
+
+        private void ChatInputBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ChatPlaceholder.Visibility = string.IsNullOrEmpty(ChatInputBox.Text) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void ChatInputBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && !Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+            {
+                e.Handled = true;
+                _ = SubmitFollowUpMessageAsync();
+            }
+        }
+
+        private void SendButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            _ = SubmitFollowUpMessageAsync();
+        }
+
+        private void QuickPrompt_Simpler(object sender, MouseButtonEventArgs e) => _ = SubmitFollowUpMessageAsync("Could you explain this in simpler terms with a clear summary?");
+        private void QuickPrompt_Examples(object sender, MouseButtonEventArgs e) => _ = SubmitFollowUpMessageAsync("Can you provide a couple of practical real-world examples illustrating this?");
+        private void QuickPrompt_Grammar(object sender, MouseButtonEventArgs e) => _ = SubmitFollowUpMessageAsync("Please break down the sentence structure and key grammar/vocabulary used here.");
+        private void QuickPrompt_BulletPoints(object sender, MouseButtonEventArgs e) => _ = SubmitFollowUpMessageAsync("Summarize the key takeaways into concise bullet points.");
+
+        private async System.Threading.Tasks.Task SubmitFollowUpMessageAsync(string? explicitPrompt = null)
+        {
+            if (_isSending) return;
+
+            string userPrompt = (explicitPrompt ?? ChatInputBox.Text).Trim();
+            if (string.IsNullOrWhiteSpace(userPrompt)) return;
+
+            // Pause timer so the conversation stays active
+            PauseTimer();
+
+            ChatInputBox.Clear();
+            _isSending = true;
+
+            // Update Send button state
+            SendBtn.IsEnabled = false;
+            SendBtn.Opacity = 0.6;
+            SendBtnIcon.Text = "⏳";
+            SendBtnText.Text = "Thinking...";
+
+            // Append user prompt to UI and history
+            _chatHistory.Add(new AIService.ChatMessage { Role = "user", Content = userPrompt });
+            MarkdownHelper.AppendUserMessage(AnswerBox.Document, userPrompt);
+            var thinkingBlock = MarkdownHelper.AppendThinkingIndicator(AnswerBox.Document);
+            AnswerBox.ScrollToEnd();
+
+            try
+            {
+                string aiReply = await AIService.GetChatResponseAsync(_chatHistory);
+                _chatHistory.Add(new AIService.ChatMessage { Role = "assistant", Content = aiReply });
+
+                MarkdownHelper.RemoveBlock(AnswerBox.Document, thinkingBlock);
+                MarkdownHelper.AppendAiResponse(AnswerBox.Document, aiReply);
+                AnswerBox.ScrollToEnd();
+            }
+            catch (Exception ex)
+            {
+                MarkdownHelper.RemoveBlock(AnswerBox.Document, thinkingBlock);
+                MarkdownHelper.AppendAiResponse(AnswerBox.Document, $"⚠️ **Error:** {ex.Message}");
+                AnswerBox.ScrollToEnd();
+            }
+            finally
+            {
+                SendBtn.IsEnabled = true;
+                SendBtn.Opacity = 1.0;
+                SendBtnIcon.Text = "➤";
+                SendBtnText.Text = "Send";
+                _isSending = false;
+                ChatInputBox.Focus();
+            }
+        }
+
+        #endregion
+
+        #region Timer & Window Controls
+
+        private void PauseTimer()
+        {
+            if (_timer == null || _isPaused) return;
+
+            _timer.Stop();
+            _isPaused = true;
+            PauseBtnText.Text = "Resume";
+            PauseIcon.Text = "▶ ";
+            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+            TimerLabel.Text = $"Chat active (Paused)";
+            AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
+        }
+
+        private void ResumeTimer()
+        {
+            if (_timer == null || !_isPaused) return;
+
+            _timer.Start();
+            _isPaused = false;
+            PauseBtnText.Text = "Pause";
+            PauseIcon.Text = "⏸ ";
+            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
+            TimerLabel.Text = $"Auto closing in {(_ticksRemaining / 10) + 1}s";
+            AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+        }
+
+        private void PauseButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (!_isPaused)
+            {
+                PauseTimer();
+            }
+            else
+            {
+                ResumeTimer();
+            }
+        }
+
         private void StartFadeOutAndClose()
         {
             if (_isClosing) return;
@@ -101,34 +238,6 @@ namespace SnapMini.Views
                 _ => settings.GeminiModel
             };
             ModelTagText.Text = AIService.GetModelDisplayName(provider, modelId);
-        }
-
-        private void PauseButton_Click(object sender, MouseButtonEventArgs e)
-        {
-            if (_timer == null) return;
-
-            if (!_isPaused)
-            {
-                // Pause timer
-                _timer.Stop();
-                _isPaused = true;
-                PauseBtnText.Text = "Resume";
-                PauseIcon.Text = "▶ ";
-                PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
-                TimerLabel.Text = $"Paused ({(_ticksRemaining / 10) + 1}s left)";
-                AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
-            }
-            else
-            {
-                // Resume timer
-                _timer.Start();
-                _isPaused = false;
-                PauseBtnText.Text = "Pause";
-                PauseIcon.Text = "⏸ ";
-                PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
-                TimerLabel.Text = $"Auto closing in {(_ticksRemaining / 10) + 1}s";
-                AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
-            }
         }
 
         private void LoadLogoImage()
@@ -249,7 +358,19 @@ namespace SnapMini.Views
         {
             try
             {
-                Clipboard.SetText(AnswerText.Text);
+                string textToCopy;
+                if (!string.IsNullOrWhiteSpace(AnswerBox.Selection.Text))
+                {
+                    textToCopy = AnswerBox.Selection.Text;
+                }
+                else
+                {
+                    // Copy the latest assistant response or all conversation if available
+                    var lastAssistant = _chatHistory.FindLast(m => m.Role == "assistant");
+                    textToCopy = lastAssistant?.Content ?? _initialAnswerText;
+                }
+
+                Clipboard.SetText(textToCopy);
                 CopyBtnText.Text = "Copied!";
                 CopyIcon.Text = "✓ ";
 
@@ -272,5 +393,7 @@ namespace SnapMini.Views
         {
             StartFadeOutAndClose();
         }
+
+        #endregion
     }
 }
