@@ -52,11 +52,11 @@ namespace SnapMini.Services
                 "Groq API Key missing! Please set your key inside appsettings.json or open Settings (⚙️).");
         }
 
-        public static async Task<string> GetChatResponseAsync(System.Collections.Generic.List<AIService.ChatMessage> messages, string modelName = "llama-3.3-70b-versatile", string? customPrompt = null)
+        public static async Task<string> GetChatResponseAsync(System.Collections.Generic.List<AIService.ChatMessage> messages, string modelName = "openai/gpt-oss-20b", string? customPrompt = null)
         {
             string apiKey = GetApiKey();
             string promptHeader = string.IsNullOrWhiteSpace(customPrompt) ? AIService.DefaultSystemPrompt : customPrompt;
-            string targetModel = string.IsNullOrWhiteSpace(modelName) ? "llama-3.3-70b-versatile" : modelName;
+            string targetModel = string.IsNullOrWhiteSpace(modelName) ? "openai/gpt-oss-20b" : modelName;
 
             var msgsList = new System.Collections.Generic.List<object>
             {

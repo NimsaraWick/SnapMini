@@ -45,7 +45,7 @@ namespace SnapMini.Services
             else if (provider.Equals("Groq", StringComparison.OrdinalIgnoreCase))
             {
                 CurrentProviderName = "Groq";
-                string groqModel = string.IsNullOrWhiteSpace(settings.GroqModel) ? "llama-3.3-70b-versatile" : settings.GroqModel;
+                string groqModel = string.IsNullOrWhiteSpace(settings.GroqModel) ? "openai/gpt-oss-20b" : settings.GroqModel;
                 CurrentModelDisplayName = GetModelDisplayName("Groq", groqModel);
                 return await GroqService.GetChatResponseAsync(messages, groqModel, systemPrompt);
             }
@@ -82,10 +82,13 @@ namespace SnapMini.Services
                 },
                 "Groq" => modelId switch
                 {
+                    "openai/gpt-oss-20b" => "Groq GPT-OSS 20B",
+                    "openai/gpt-oss-120b" => "Groq GPT-OSS 120B",
+                    "qwen/qwen3.6-27b" => "Groq Qwen 3.6 27B",
+                    "groq/compound" => "Groq Compound",
+                    "groq/compound-mini" => "Groq Compound Mini",
                     "llama-3.3-70b-versatile" => "Groq Llama 3.3 70B",
                     "deepseek-r1-distill-llama-70b" => "Groq DeepSeek R1 70B",
-                    "mixtral-8x7b-32768" => "Groq Mixtral 8x7B",
-                    "gemma2-9b-it" => "Groq Gemma 2 9B",
                     _ => $"Groq ({modelId})"
                 },
                 _ => modelId switch
@@ -115,7 +118,7 @@ namespace SnapMini.Services
         {
             public string Provider { get; set; } = "Gemini";
             public string GeminiModel { get; set; } = "gemini-2.5-flash";
-            public string GroqModel { get; set; } = "llama-3.3-70b-versatile";
+            public string GroqModel { get; set; } = "openai/gpt-oss-20b";
             public string OpenRouterModel { get; set; } = "openai/gpt-oss-20b:free";
             public string GeminiApiKey { get; set; } = "";
             public string GroqApiKey { get; set; } = "";

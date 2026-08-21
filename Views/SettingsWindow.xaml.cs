@@ -31,10 +31,11 @@ namespace SnapMini.Views
 
         private readonly List<ModelOption> _groqModels = new List<ModelOption>
         {
-            new ModelOption("Llama 3.3 70B Versatile", "llama-3.3-70b-versatile"),
-            new ModelOption("DeepSeek R1 Distill 70B", "deepseek-r1-distill-llama-70b"),
-            new ModelOption("Mixtral 8x7B", "mixtral-8x7b-32768"),
-            new ModelOption("Gemma 2 9B", "gemma2-9b-it")
+            new ModelOption("OpenAI GPT-OSS 20B (Ultra Fast)", "openai/gpt-oss-20b"),
+            new ModelOption("OpenAI GPT-OSS 120B (High Reasoning)", "openai/gpt-oss-120b"),
+            new ModelOption("Qwen 3.6 27B", "qwen/qwen3.6-27b"),
+            new ModelOption("Groq Compound", "groq/compound"),
+            new ModelOption("Groq Compound Mini", "groq/compound-mini")
         };
 
         private readonly List<ModelOption> _openRouterModels = new List<ModelOption>
@@ -429,7 +430,7 @@ namespace SnapMini.Views
             }
             else if (RadioGroq.IsChecked == true)
             {
-                PopulateModels(_groqModels, "llama-3.3-70b-versatile");
+                PopulateModels(_groqModels, "openai/gpt-oss-20b");
             }
             else
             {
