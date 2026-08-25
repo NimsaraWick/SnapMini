@@ -4,8 +4,8 @@
     <!-- Specify executable output for Windows application -->
     <OutputType>WinExe</OutputType>
 
-    <!-- Target .NET 8 with Windows 10 SDK support for native WinRT APIs -->
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <!-- Target .NET 10 with Windows 10 SDK support for native WinRT APIs -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
 
     <!-- Enable WPF and Windows Forms for UI & System Tray TrayIcon -->
@@ -13,7 +13,7 @@
     <UseWindowsForms>true</UseWindowsForms>
 
     <!-- Executable Icon -->
-    <ApplicationIcon>Images\SM_icon.ico</ApplicationIcon>
+    <ApplicationIcon>Images\SMini_icon.ico</ApplicationIcon>
 
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>

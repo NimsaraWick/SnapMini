@@ -383,7 +383,7 @@ namespace SnapMini.Views
         {
             try
             {
-                string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "SM_logo.png");
+                string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "SMini.png");
                 if (File.Exists(logoPath))
                 {
                     var bitmap = new BitmapImage();

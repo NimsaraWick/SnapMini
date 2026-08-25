@@ -8,9 +8,9 @@ using SnapMini.Views;
 
 namespace SnapMini
 {
-    /// <summary> 
+    /// <summary>
     /// Application entry point configuring System Tray icon and registering Global Hotkeys.
-    /// Uses Images/SM_logo.png as custom system tray icon and provides Settings menu.
+    /// Uses Images/SMini.png as custom system tray icon and provides Settings menu.
     /// </summary>
     public partial class App : System.Windows.Application
     {
@@ -24,9 +24,9 @@ namespace SnapMini
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            // Load custom System Tray icon from Images/SM_logo.png
+            // Load custom System Tray icon from Images/SMini.png
             Icon trayIconImage = SystemIcons.Application;
-            string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "SM_logo.png");
+            string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "SMini.png");
 
             if (File.Exists(iconPath))
             {

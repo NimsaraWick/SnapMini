@@ -25,7 +25,7 @@ Powered by native **Windows OCR** and support for **Google Gemini**, **Groq Clou
   * **Screen Position & Mode Selector**: Position the popup at `Top-Left ↖`, `Top-Right ↗`, `Center ⊹`, `Bottom-Left ↙`, `Bottom-Right ↘`, or toggle **`Full Screen ⛶`**. Choice is saved directly in `appsettings.json`.
   * **Pause / Resume Timer**: Freeze or resume the auto-dismiss countdown timer anytime using the button or pressing <kbd>Space</kbd>.
   * **One-Click Copy**: Copy AI answers to your clipboard with instant feedback.
-* 📌 **System Tray Integration**: Custom **`SM_icon`** in the Windows Taskbar tray with right-click Settings and Exit controls.
+* 📌 **System Tray Integration**: Custom **`SMini_icon`** in the Windows Taskbar tray with right-click Settings and Exit controls.
 
 ---
 
@@ -83,7 +83,7 @@ dotnet run
 ```
 
 ### Publish Standalone `.exe`
-To build a single standalone `SnapMini.exe` executable with embedded custom branding (`SM_icon`):
+To build a single standalone `SnapMini.exe` executable with embedded custom branding (`SMini_icon`):
 
 ```powershell
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
@@ -118,7 +118,7 @@ SnapMini/
 │   ├── AnswerWindow.xaml.cs   # Screen position picker engine & timer logic
 │   ├── SettingsWindow.xaml    # Dark SaaS Settings UI (Provider, Models, Keys, Prompt)
 │   └── SettingsWindow.xaml.cs # Settings UI event handling & password eye toggles
-├── 📁 Images/                 # SM_logo.png, SM_logo.png, SM_icon.ico
+├── 📁 Images/                 # SMini.png, SMini.png, SMini_icon.ico
 ├── ⚙️ App.xaml & App.xaml.cs  # Application entry point & System Tray setup
 ├── 🔑 appsettings.json        # Unified application settings file
 └── 📦 SnapMini.csproj         # .NET 8 Project file
