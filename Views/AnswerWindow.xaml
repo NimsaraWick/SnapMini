@@ -10,6 +10,7 @@
         WindowStartupLocation="Manual"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
+        PreviewKeyDown="Window_PreviewKeyDown"
         Loaded="Window_Loaded">
 
     <!-- Outer Container with Dark Slate Theme & Deep Shadow -->
@@ -79,11 +80,14 @@
                             <Border x:Name="BtnBottomRight" MouseLeftButtonDown="SetPos_BottomRight" ToolTip="Bottom-Right Position" Width="22" Height="22" CornerRadius="5" Cursor="Hand" Background="Transparent">
                                 <TextBlock Text="↘" Foreground="#94A3B8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
+                            <Border x:Name="BtnFullScreen" MouseLeftButtonDown="SetPos_FullScreen" ToolTip="Full Screen Preset (F11 / F)" Width="22" Height="22" CornerRadius="5" Cursor="Hand" Background="Transparent">
+                                <TextBlock Text="⛶" Foreground="#94A3B8" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
                         </StackPanel>
                     </Border>
 
                     <!-- Copy Button Card -->
-                    <Border Grid.Column="4" x:Name="CopyBtn" MouseLeftButtonDown="CopyButton_Click" Cursor="Hand" Background="#334155" CornerRadius="8" Padding="8,4" Margin="0,0,8,0" VerticalAlignment="Center">
+                    <Border Grid.Column="4" x:Name="CopyBtn" MouseLeftButtonDown="CopyButton_Click" Cursor="Hand" Background="#334155" CornerRadius="8" Padding="8,4" Margin="0,0,8,0" VerticalAlignment="Center" ToolTip="Copy Answer (Ctrl+C)">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Name="CopyIcon" Text="📋 " Foreground="#E2E8F0" FontSize="11"/>
                             <TextBlock x:Name="CopyBtnText" Text="Copy" Foreground="#E2E8F0" FontSize="11" FontWeight="Medium"/>
@@ -91,7 +95,7 @@
                     </Border>
 
                     <!-- Close Button -->
-                    <Border Grid.Column="5" MouseLeftButtonDown="CloseButton_Click" Cursor="Hand" Background="Transparent" CornerRadius="6" Width="24" Height="24" VerticalAlignment="Center">
+                    <Border Grid.Column="5" MouseLeftButtonDown="CloseButton_Click" Cursor="Hand" Background="Transparent" CornerRadius="6" Width="24" Height="24" VerticalAlignment="Center" ToolTip="Close (Esc)">
                         <TextBlock Text="✕" Foreground="#94A3B8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </Grid>
@@ -200,7 +204,8 @@
 
                     <!-- Pause / Resume Button -->
                     <Border Grid.Column="1" x:Name="PauseBtn" MouseLeftButtonDown="PauseButton_Click" Cursor="Hand" 
-                            Background="#334155" CornerRadius="6" Padding="8,3" Margin="0,0,10,0" VerticalAlignment="Center">
+                            Background="#334155" CornerRadius="6" Padding="8,3" Margin="0,0,10,0" VerticalAlignment="Center"
+                            ToolTip="Pause / Resume Timer (Space / P)">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Name="PauseIcon" Text="⏸ " Foreground="#E2E8F0" FontSize="10" VerticalAlignment="Center"/>
                             <TextBlock x:Name="PauseBtnText" Text="Pause" Foreground="#E2E8F0" FontSize="11" FontWeight="Medium" VerticalAlignment="Center"/>

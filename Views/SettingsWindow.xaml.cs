@@ -306,6 +306,14 @@ namespace SnapMini.Views
             SetDimensions(960, 720);
         }
 
+        private void PresetSize_FullScreen(object sender, MouseButtonEventArgs e)
+        {
+            var workArea = SystemParameters.WorkArea;
+            int fsW = (int)workArea.Width - 16;
+            int fsH = (int)workArea.Height - 16;
+            SetDimensions(fsW, fsH);
+        }
+
         private void ResetDefaultSize_Click(object sender, MouseButtonEventArgs e)
         {
             SetDimensions(680, 580);
@@ -323,6 +331,10 @@ namespace SnapMini.Views
         {
             ResetPresetHighlights();
 
+            var workArea = SystemParameters.WorkArea;
+            int fsW = (int)workArea.Width - 16;
+            int fsH = (int)workArea.Height - 16;
+
             if (w == 560 && h == 480)
             {
                 HighlightPill(PillCompact, TextCompact);
@@ -338,6 +350,10 @@ namespace SnapMini.Views
             else if (w == 960 && h == 720)
             {
                 HighlightPill(PillLarge, TextLarge);
+            }
+            else if (Math.Abs(w - fsW) <= 20 && Math.Abs(h - fsH) <= 20)
+            {
+                HighlightPill(PillFullScreen, TextFullScreen);
             }
         }
 
@@ -360,11 +376,13 @@ namespace SnapMini.Views
             if (PillStandard != null) { PillStandard.Background = defaultBg; PillStandard.BorderBrush = defaultBorder; }
             if (PillWide != null) { PillWide.Background = defaultBg; PillWide.BorderBrush = defaultBorder; }
             if (PillLarge != null) { PillLarge.Background = defaultBg; PillLarge.BorderBrush = defaultBorder; }
+            if (PillFullScreen != null) { PillFullScreen.Background = defaultBg; PillFullScreen.BorderBrush = defaultBorder; }
 
             if (TextCompact != null) { TextCompact.Foreground = defaultFg; TextCompact.FontWeight = FontWeights.Normal; }
             if (TextStandard != null) { TextStandard.Foreground = defaultFg; TextStandard.FontWeight = FontWeights.Normal; }
             if (TextWide != null) { TextWide.Foreground = defaultFg; TextWide.FontWeight = FontWeights.Normal; }
             if (TextLarge != null) { TextLarge.Foreground = defaultFg; TextLarge.FontWeight = FontWeights.Normal; }
+            if (TextFullScreen != null) { TextFullScreen.Foreground = defaultFg; TextFullScreen.FontWeight = FontWeights.Normal; }
         }
 
         #endregion

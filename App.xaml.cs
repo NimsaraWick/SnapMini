@@ -8,7 +8,7 @@ using SnapMini.Views;
 
 namespace SnapMini
 {
-    /// <summary>
+    /// <summary> 
     /// Application entry point configuring System Tray icon and registering Global Hotkeys.
     /// Uses Images/SM_logo.png as custom system tray icon and provides Settings menu.
     /// </summary>

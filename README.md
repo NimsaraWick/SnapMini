@@ -22,8 +22,8 @@ Powered by native **Windows OCR** and support for **Google Gemini**, **Groq Clou
   * **Customizable System Prompt**: Edit the prompt template sent before your text/OCR input, or click "Reset Default" anytime.
 * 🎨 **Linear/Stripe-Inspired Dark SaaS UI (`AnswerWindow.xaml`)**:
   * Frameless dark glass UI (`#0F172A`) with deep drop shadows and app icon branding.
-  * **5-Way Screen Position Picker**: Position the popup at `Top-Left ↖`, `Top-Right ↗`, `Center ⊹`, `Bottom-Left ↙`, or `Bottom-Right ↘`. Choice is saved directly in `appsettings.json`.
-  * **Pause / Resume Timer**: Freeze or resume the 25-second auto-dismiss countdown timer anytime.
+  * **Screen Position & Mode Selector**: Position the popup at `Top-Left ↖`, `Top-Right ↗`, `Center ⊹`, `Bottom-Left ↙`, `Bottom-Right ↘`, or toggle **`Full Screen ⛶`**. Choice is saved directly in `appsettings.json`.
+  * **Pause / Resume Timer**: Freeze or resume the auto-dismiss countdown timer anytime using the button or pressing <kbd>Space</kbd>.
   * **One-Click Copy**: Copy AI answers to your clipboard with instant feedback.
 * 📌 **System Tray Integration**: Custom **`SM_icon`** in the Windows Taskbar tray with right-click Settings and Exit controls.
 
@@ -31,10 +31,20 @@ Powered by native **Windows OCR** and support for **Google Gemini**, **Groq Clou
 
 ## ⌨️ Shortcuts Reference
 
+### Global Shortcuts (System-wide)
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
 | **`Ctrl + Alt + A`** | **Selected Text Q&A** | Automatically copies highlighted text from any application/browser and queries AI. |
 | **`Ctrl + Alt + S`** | **Screenshot Q&A** | Automatically launches Windows Snipping Tool (`ms-screenclip:`), extracts text via OCR, and queries AI. |
+
+### Popup Shortcuts (Answer Window)
+| Shortcut | Action | Description |
+| :--- | :--- | :--- |
+| **`Space`** or **`P`** | **Pause / Continue Timer** | Toggles the auto-close countdown timer pause/resume state. *(Ignored when typing in the follow-up chat input box)* |
+| **`F11`** or **`F`** | **Toggle Full Screen** | Expands the answer popup to full screen or restores default window dimensions. |
+| **`Esc`** | **Close Window** | Instantly closes the answer popup with a smooth fade-out animation. |
+| **`Enter`** | **Send Chat Message** | Submits follow-up questions when typing in the chat input box. |
+| **`Shift + Enter`** | **New Line** | Inserts a new line in the chat input box without submitting. |
 
 ---
 

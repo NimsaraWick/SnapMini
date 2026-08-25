@@ -236,6 +236,19 @@ namespace SnapMini.Views
 
         #region Timer & Window Controls
 
+        private void TogglePauseTimer()
+        {
+            if (_timer == null) return;
+            if (!_isPaused)
+            {
+                PauseTimer();
+            }
+            else
+            {
+                ResumeTimer();
+            }
+        }
+
         private void PauseTimer()
         {
             if (_timer == null || _isPaused) return;
@@ -264,13 +277,47 @@ namespace SnapMini.Views
 
         private void PauseButton_Click(object sender, MouseButtonEventArgs e)
         {
-            if (!_isPaused)
+            TogglePauseTimer();
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            // If the chat input box has focus, let the user type normally (including spaces)
+            if (ChatInputBox.IsFocused)
             {
-                PauseTimer();
+                if (e.Key == Key.Escape)
+                {
+                    StartFadeOutAndClose();
+                    e.Handled = true;
+                }
+                return;
             }
-            else
+
+            // Global shortcut inside popup: Space or P to Pause/Resume countdown timer
+            if (e.Key == Key.Space || e.Key == Key.P)
             {
-                ResumeTimer();
+                TogglePauseTimer();
+                e.Handled = true;
+            }
+            // Full Screen toggle shortcut: F11 or F
+            else if (e.Key == Key.F11 || e.Key == Key.F)
+            {
+                string currentPos = ReadSavedPosition();
+                if (currentPos == "FullScreen")
+                {
+                    ApplyPosition("TopRight");
+                }
+                else
+                {
+                    ApplyPosition("FullScreen");
+                }
+                e.Handled = true;
+            }
+            // Escape to dismiss popup
+            else if (e.Key == Key.Escape)
+            {
+                StartFadeOutAndClose();
+                e.Handled = true;
             }
         }
 
@@ -354,6 +401,7 @@ namespace SnapMini.Views
         {
             string savedPos = ReadSavedPosition();
             ApplyPosition(savedPos);
+            this.Focus();
         }
 
         private string ReadSavedPosition()
@@ -375,6 +423,22 @@ namespace SnapMini.Views
 
         private void ApplyPosition(string positionName, double? customWidth = null, double? customHeight = null)
         {
+            var workArea = SystemParameters.WorkArea;
+            double padding = 8;
+
+            ResetButtonHighlights();
+
+            if (positionName == "FullScreen")
+            {
+                Width = workArea.Width - (padding * 2);
+                Height = workArea.Height - (padding * 2);
+                Left = workArea.Left + padding;
+                Top = workArea.Top + padding;
+                HighlightButton(BtnFullScreen);
+                SavePositionPreference("FullScreen");
+                return;
+            }
+
             if (customWidth.HasValue && customWidth.Value >= 400)
             {
                 Width = customWidth.Value;
@@ -382,7 +446,10 @@ namespace SnapMini.Views
             else
             {
                 var settings = AIService.ReadSettings();
-                if (settings.WindowWidth >= 400) Width = settings.WindowWidth;
+                if (settings.WindowWidth >= 400 && settings.WindowWidth < workArea.Width)
+                    Width = settings.WindowWidth;
+                else
+                    Width = 680;
             }
 
             if (customHeight.HasValue && customHeight.Value >= 300)
@@ -392,13 +459,11 @@ namespace SnapMini.Views
             else
             {
                 var settings = AIService.ReadSettings();
-                if (settings.WindowHeight >= 300) Height = settings.WindowHeight;
+                if (settings.WindowHeight >= 300 && settings.WindowHeight < workArea.Height)
+                    Height = settings.WindowHeight;
+                else
+                    Height = 580;
             }
-
-            var workArea = SystemParameters.WorkArea;
-            double padding = 8;
-
-            ResetButtonHighlights();
 
             switch (positionName)
             {
@@ -450,6 +515,7 @@ namespace SnapMini.Views
             BtnCenter.Background = transparent;
             BtnBottomLeft.Background = transparent;
             BtnBottomRight.Background = transparent;
+            BtnFullScreen.Background = transparent;
         }
 
         private void SetPos_TopLeft(object sender, MouseButtonEventArgs e) => ApplyPosition("TopLeft");
@@ -457,6 +523,18 @@ namespace SnapMini.Views
         private void SetPos_Center(object sender, MouseButtonEventArgs e) => ApplyPosition("Center");
         private void SetPos_BottomLeft(object sender, MouseButtonEventArgs e) => ApplyPosition("BottomLeft");
         private void SetPos_BottomRight(object sender, MouseButtonEventArgs e) => ApplyPosition("BottomRight");
+        private void SetPos_FullScreen(object sender, MouseButtonEventArgs e)
+        {
+            string currentPos = ReadSavedPosition();
+            if (currentPos == "FullScreen")
+            {
+                ApplyPosition("TopRight");
+            }
+            else
+            {
+                ApplyPosition("FullScreen");
+            }
+        }
 
         private void Header_MouseDown(object sender, MouseButtonEventArgs e)
         {

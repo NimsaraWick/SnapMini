@@ -329,22 +329,25 @@
                             </Grid>
 
                             <!-- Quick Size Presets -->
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Presets:" Foreground="#64748B" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <WrapPanel Orientation="Horizontal">
+                                <TextBlock Text="Presets:" Foreground="#64748B" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,4"/>
                                 
-                                <Border x:Name="PillCompact" MouseLeftButtonDown="PresetSize_Compact" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,0">
+                                <Border x:Name="PillCompact" MouseLeftButtonDown="PresetSize_Compact" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
                                     <TextBlock x:Name="TextCompact" Text="Compact (560x480)" Foreground="#94A3B8" FontSize="11"/>
                                 </Border>
-                                <Border x:Name="PillStandard" MouseLeftButtonDown="PresetSize_Standard" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,0">
+                                <Border x:Name="PillStandard" MouseLeftButtonDown="PresetSize_Standard" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
                                     <TextBlock x:Name="TextStandard" Text="Standard (680x580)" Foreground="#94A3B8" FontSize="11"/>
                                 </Border>
-                                <Border x:Name="PillWide" MouseLeftButtonDown="PresetSize_Wide" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,0">
+                                <Border x:Name="PillWide" MouseLeftButtonDown="PresetSize_Wide" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
                                     <TextBlock x:Name="TextWide" Text="Wide (820x600)" Foreground="#94A3B8" FontSize="11"/>
                                 </Border>
-                                <Border x:Name="PillLarge" MouseLeftButtonDown="PresetSize_Large" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3">
+                                <Border x:Name="PillLarge" MouseLeftButtonDown="PresetSize_Large" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
                                     <TextBlock x:Name="TextLarge" Text="Large (960x720)" Foreground="#94A3B8" FontSize="11"/>
                                 </Border>
-                            </StackPanel>
+                                <Border x:Name="PillFullScreen" MouseLeftButtonDown="PresetSize_FullScreen" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,0,4">
+                                    <TextBlock x:Name="TextFullScreen" Text="Full Screen (⛶)" Foreground="#94A3B8" FontSize="11"/>
+                                </Border>
+                            </WrapPanel>
                         </StackPanel>
                     </Border>
 
