@@ -13,10 +13,10 @@
         PreviewKeyDown="Window_PreviewKeyDown"
         Loaded="Window_Loaded">
 
-    <!-- Outer Container with Dark Slate Theme & Deep Shadow -->
-    <Border Margin="16" CornerRadius="16" Background="#0F172A" BorderBrush="#334155" BorderThickness="1">
+    <!-- Outer Container with Obsidian Black Theme & Deep Shadow -->
+    <Border Margin="16" CornerRadius="16" Background="#0A0A0E" BorderBrush="#262338" BorderThickness="1">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="28" ShadowDepth="10" Direction="270" Color="#000000" Opacity="0.6"/>
+            <DropShadowEffect BlurRadius="32" ShadowDepth="12" Direction="270" Color="#000000" Opacity="0.75"/>
         </Border.Effect>
 
         <Grid x:Name="MainGrid">
@@ -29,7 +29,7 @@
             </Grid.RowDefinitions>
 
             <!-- 0. Header (Draggable Bar with Position Controls, Model Badge & Settings) -->
-            <Border Grid.Row="0" Background="#1E293B" CornerRadius="15,15,0,0" Padding="14,10" MouseDown="Header_MouseDown">
+            <Border Grid.Row="0" Background="#12111A" CornerRadius="15,15,0,0" Padding="14,10" MouseDown="Header_MouseDown">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -44,89 +44,96 @@
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                         <Image x:Name="AppLogoImage" Width="26" Height="26" Margin="0,0,8,0" 
                                RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center"/>
-                        <TextBlock Text="SnapMini" Foreground="#F8FAFC" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
+                        <TextBlock Text="SnapMini" Foreground="#FFFFFF" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <!-- Model Tag -->
-                    <Border Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="8,3" CornerRadius="12" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" VerticalAlignment="Center">
+                    <Border Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="8,3" CornerRadius="12" Background="#0D0C14" BorderBrush="#2A273D" BorderThickness="1" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
-                            <Ellipse Width="6" Height="6" Fill="#10B981" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="ModelTagText" Text="Gemini 2.5 Flash" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold"/>
+                            <Ellipse Width="6" Height="6" Margin="0,0,6,0" VerticalAlignment="Center">
+                                <Ellipse.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#8D3BF0" Offset="0.0"/>
+                                        <GradientStop Color="#0B33D3" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <TextBlock x:Name="ModelTagText" Text="Gemini 2.5 Flash" Foreground="#C4B5FD" FontSize="11" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Settings Button -->
                     <Border Grid.Column="2" MouseLeftButtonDown="SettingsButton_Click" ToolTip="Settings (⚙️)" Cursor="Hand" 
                             Background="Transparent" CornerRadius="6" Width="24" Height="24" Margin="6,0,6,0" VerticalAlignment="Center">
-                        <TextBlock Text="⚙️" Foreground="#94A3B8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="⚙️" Foreground="#A1A1AA" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
 
                     <!-- Position Selector Pill -->
                     <Border Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                            Background="#0F172A" CornerRadius="8" BorderBrush="#334155" BorderThickness="1" Padding="3,2">
+                            Background="#0D0C14" CornerRadius="8" BorderBrush="#2A273D" BorderThickness="1" Padding="3,2">
                         <StackPanel Orientation="Horizontal">
                             <Border x:Name="BtnTopLeft" MouseLeftButtonDown="SetPos_TopLeft" ToolTip="Top-Left Position" Width="22" Height="22" CornerRadius="5" Cursor="Hand" Background="Transparent">
-                                <TextBlock Text="↖" Foreground="#94A3B8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="↖" Foreground="#A1A1AA" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <Border x:Name="BtnTopRight" MouseLeftButtonDown="SetPos_TopRight" ToolTip="Top-Right Position" Width="22" Height="22" CornerRadius="5" Cursor="Hand" Background="Transparent">
-                                <TextBlock Text="↗" Foreground="#94A3B8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="↗" Foreground="#A1A1AA" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <Border x:Name="BtnCenter" MouseLeftButtonDown="SetPos_Center" ToolTip="Center Position" Width="22" Height="22" CornerRadius="5" Cursor="Hand" Background="Transparent">
-                                <TextBlock Text="⊹" Foreground="#94A3B8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="⊹" Foreground="#A1A1AA" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <Border x:Name="BtnBottomLeft" MouseLeftButtonDown="SetPos_BottomLeft" ToolTip="Bottom-Left Position" Width="22" Height="22" CornerRadius="5" Cursor="Hand" Background="Transparent">
-                                <TextBlock Text="↙" Foreground="#94A3B8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="↙" Foreground="#A1A1AA" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <Border x:Name="BtnBottomRight" MouseLeftButtonDown="SetPos_BottomRight" ToolTip="Bottom-Right Position" Width="22" Height="22" CornerRadius="5" Cursor="Hand" Background="Transparent">
-                                <TextBlock Text="↘" Foreground="#94A3B8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="↘" Foreground="#A1A1AA" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <Border x:Name="BtnFullScreen" MouseLeftButtonDown="SetPos_FullScreen" ToolTip="Full Screen Preset (F11 / F)" Width="22" Height="22" CornerRadius="5" Cursor="Hand" Background="Transparent">
-                                <TextBlock Text="⛶" Foreground="#94A3B8" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="⛶" Foreground="#A1A1AA" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </StackPanel>
                     </Border>
 
                     <!-- Copy Button Card -->
-                    <Border Grid.Column="4" x:Name="CopyBtn" MouseLeftButtonDown="CopyButton_Click" Cursor="Hand" Background="#334155" CornerRadius="8" Padding="8,4" Margin="0,0,8,0" VerticalAlignment="Center" ToolTip="Copy Answer (Ctrl+C)">
+                    <Border Grid.Column="4" x:Name="CopyBtn" MouseLeftButtonDown="CopyButton_Click" Cursor="Hand" Background="#1F1D2E" BorderBrush="#35314D" BorderThickness="1" CornerRadius="8" Padding="8,4" Margin="0,0,8,0" VerticalAlignment="Center" ToolTip="Copy Answer (Ctrl+C)">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="CopyIcon" Text="📋 " Foreground="#E2E8F0" FontSize="11"/>
-                            <TextBlock x:Name="CopyBtnText" Text="Copy" Foreground="#E2E8F0" FontSize="11" FontWeight="Medium"/>
+                            <TextBlock x:Name="CopyIcon" Text="📋 " Foreground="#E4E4E7" FontSize="11"/>
+                            <TextBlock x:Name="CopyBtnText" Text="Copy" Foreground="#E4E4E7" FontSize="11" FontWeight="Medium"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Close Button -->
                     <Border Grid.Column="5" MouseLeftButtonDown="CloseButton_Click" Cursor="Hand" Background="Transparent" CornerRadius="6" Width="24" Height="24" VerticalAlignment="Center" ToolTip="Close (Esc)">
-                        <TextBlock Text="✕" Foreground="#94A3B8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="✕" Foreground="#A1A1AA" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </Grid>
             </Border>
 
             <!-- 1. Question / Captured Context Card -->
             <StackPanel Grid.Row="1" Margin="16,10,16,6">
-                <TextBlock Text="CAPTURED CONTEXT" Foreground="#64748B" FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
-                <Border Background="#1E293B" CornerRadius="10" BorderBrush="#334155" BorderThickness="1" Padding="10,6">
+                <TextBlock Text="CAPTURED CONTEXT" Foreground="#8D3BF0" FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                <Border Background="#13121C" CornerRadius="10" BorderBrush="#262338" BorderThickness="1" Padding="10,6">
                     <TextBox x:Name="QuestionBox" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="60" 
-                             Background="Transparent" Foreground="#94A3B8" BorderThickness="0"
+                             Background="Transparent" Foreground="#A1A1AA" BorderThickness="0"
                              FontSize="12.5" FontFamily="Segoe UI" VerticalScrollBarVisibility="Auto"
-                             SelectionBrush="#6366F1" SelectionOpacity="0.5"/>
+                             SelectionBrush="#8D3BF0" SelectionOpacity="0.4"/>
                 </Border>
             </StackPanel>
 
             <!-- 2. Answer & Chat History Card -->
             <DockPanel Grid.Row="2" Margin="16,4,16,8">
-                <TextBlock Text="AI CONVERSATION" DockPanel.Dock="Top" Foreground="#818CF8" FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
-                <Border Background="#1E293B" CornerRadius="12" BorderBrush="#334155" BorderThickness="1" Padding="12,10">
+                <TextBlock Text="AI CONVERSATION" DockPanel.Dock="Top" Foreground="#A78BFA" FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="12,10">
                     <RichTextBox x:Name="AnswerBox" 
                                  IsReadOnly="True" 
                                  IsDocumentEnabled="True"
                                  Background="Transparent" 
-                                 Foreground="#F8FAFC" 
+                                 Foreground="#F4F4F5" 
                                  BorderThickness="0"
                                  FontSize="14" 
                                  FontFamily="Segoe UI"
                                  VerticalScrollBarVisibility="Auto"
-                                 SelectionBrush="#6366F1"
-                                 SelectionOpacity="0.5"
+                                 SelectionBrush="#8D3BF0" 
+                                 SelectionOpacity="0.4"
                                  Cursor="IBeam">
                         <RichTextBox.Resources>
                             <Style TargetType="{x:Type Paragraph}">
@@ -146,7 +153,7 @@
                 </ScrollViewer>
 
                 <!-- Input Box + Send Button Container -->
-                <Border Background="#1E293B" CornerRadius="10" BorderBrush="#334155" BorderThickness="1" Padding="4,2">
+                <Border Background="#13121C" CornerRadius="10" BorderBrush="#262338" BorderThickness="1" Padding="4,2">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -156,8 +163,8 @@
                         <!-- Input Field -->
                         <TextBox x:Name="ChatInputBox" 
                                  Background="Transparent" 
-                                 Foreground="#F8FAFC" 
-                                 BorderThickness="0"
+                                 Foreground="#FFFFFF" 
+                                 BorderThickness="0" 
                                  FontSize="13" 
                                  FontFamily="Segoe UI"
                                  Padding="8,5"
@@ -165,22 +172,28 @@
                                  KeyDown="ChatInputBox_KeyDown"
                                  GotFocus="ChatInputBox_GotFocus"
                                  TextChanged="ChatInputBox_TextChanged"
-                                 SelectionBrush="#6366F1"
-                                 SelectionOpacity="0.5"/>
+                                 SelectionBrush="#8D3BF0" 
+                                 SelectionOpacity="0.4"/>
 
                         <!-- Placeholder Text -->
                         <TextBlock x:Name="ChatPlaceholder" 
                                    Text="Ask a follow-up question... (Press Enter)" 
-                                   Foreground="#64748B" 
+                                   Foreground="#71717A" 
                                    FontSize="13" 
                                    FontFamily="Segoe UI"
                                    Padding="8,5"
                                    VerticalAlignment="Center"
                                    IsHitTestVisible="False"/>
 
-                        <!-- Send Button -->
+                        <!-- Send Button with Gradient Accent -->
                         <Border Grid.Column="1" x:Name="SendBtn" MouseLeftButtonDown="SendButton_Click" Cursor="Hand" 
-                                Background="#6366F1" CornerRadius="8" Padding="10,5" Margin="2" VerticalAlignment="Center">
+                                CornerRadius="8" Padding="12,5" Margin="2" VerticalAlignment="Center">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#8D3BF0" Offset="0.0"/>
+                                    <GradientStop Color="#0B33D3" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="SendBtnIcon" Text="➤" Foreground="#FFFFFF" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
                                 <TextBlock x:Name="SendBtnText" Text="Send" Foreground="#FFFFFF" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
@@ -191,7 +204,7 @@
             </StackPanel>
 
             <!-- 4. Footer Progress Bar, Pause Control & Auto-close status -->
-            <Border Grid.Row="4" Background="#0F172A" CornerRadius="0,0,15,15" Padding="16,6,16,10">
+            <Border Grid.Row="4" Background="#0A0A0E" CornerRadius="0,0,15,15" Padding="16,6,16,10">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -200,19 +213,26 @@
                     </Grid.ColumnDefinitions>
 
                     <ProgressBar x:Name="AutoCloseProgress" Grid.Column="0" Height="4" Maximum="250" Value="250" 
-                                 Foreground="#6366F1" Background="#1E293B" BorderThickness="0" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                 Background="#161522" BorderThickness="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                        <ProgressBar.Foreground>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#8D3BF0" Offset="0.0"/>
+                                <GradientStop Color="#0B33D3" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </ProgressBar.Foreground>
+                    </ProgressBar>
 
                     <!-- Pause / Resume Button -->
                     <Border Grid.Column="1" x:Name="PauseBtn" MouseLeftButtonDown="PauseButton_Click" Cursor="Hand" 
-                            Background="#334155" CornerRadius="6" Padding="8,3" Margin="0,0,10,0" VerticalAlignment="Center"
+                            Background="#1F1D2E" BorderBrush="#35314D" BorderThickness="1" CornerRadius="6" Padding="8,3" Margin="0,0,10,0" VerticalAlignment="Center"
                             ToolTip="Pause / Resume Timer (Space / P)">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="PauseIcon" Text="⏸ " Foreground="#E2E8F0" FontSize="10" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="PauseBtnText" Text="Pause" Foreground="#E2E8F0" FontSize="11" FontWeight="Medium" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="PauseIcon" Text="⏸ " Foreground="#E4E4E7" FontSize="10" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="PauseBtnText" Text="Pause" Foreground="#E4E4E7" FontSize="11" FontWeight="Medium" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
-                    <TextBlock x:Name="TimerLabel" Grid.Column="2" Text="Auto closing in 25s" Foreground="#64748B" FontSize="11" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TimerLabel" Grid.Column="2" Text="Auto closing in 25s" Foreground="#71717A" FontSize="11" VerticalAlignment="Center"/>
                 </Grid>
             </Border>
         </Grid>

@@ -12,9 +12,9 @@
         TextOptions.TextRenderingMode="ClearType"
         Loaded="Window_Loaded">
 
-    <Border Margin="16" CornerRadius="16" Background="#0F172A" BorderBrush="#334155" BorderThickness="1">
+    <Border Margin="16" CornerRadius="16" Background="#0A0A0E" BorderBrush="#262338" BorderThickness="1">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="28" ShadowDepth="10" Direction="270" Color="#000000" Opacity="0.6"/>
+            <DropShadowEffect BlurRadius="32" ShadowDepth="12" Direction="270" Color="#000000" Opacity="0.75"/>
         </Border.Effect>
 
         <Grid>
@@ -25,7 +25,7 @@
             </Grid.RowDefinitions>
 
             <!-- 1. Header (Draggable) -->
-            <Border Grid.Row="0" Background="#1E293B" CornerRadius="15,15,0,0" Padding="16,12" MouseDown="Header_MouseDown">
+            <Border Grid.Row="0" Background="#12111A" CornerRadius="15,15,0,0" Padding="16,12" MouseDown="Header_MouseDown">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -33,12 +33,12 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="⚙️ " Foreground="#818CF8" FontSize="16" VerticalAlignment="Center"/>
-                        <TextBlock Text="SnapMini Settings" Foreground="#F8FAFC" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"/>
+                        <TextBlock Text="⚙️ " Foreground="#8D3BF0" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock Text="SnapMini Settings" Foreground="#FFFFFF" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <Border Grid.Column="1" MouseLeftButtonDown="Close_Click" Cursor="Hand" Background="Transparent" CornerRadius="6" Width="26" Height="26" VerticalAlignment="Center">
-                        <TextBlock Text="✕" Foreground="#94A3B8" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="✕" Foreground="#A1A1AA" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </Grid>
             </Border>
@@ -48,9 +48,9 @@
                 <StackPanel>
 
                     <!-- Card 1: Provider Selection -->
-                    <Border Background="#1E293B" CornerRadius="12" BorderBrush="#334155" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                    <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="14" Margin="0,0,0,12">
                         <StackPanel>
-                            <TextBlock Text="AI PROVIDER &amp; MODEL" Foreground="#818CF8" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
+                            <TextBlock Text="AI PROVIDER &amp; MODEL" Foreground="#8D3BF0" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
 
                             <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
@@ -59,18 +59,18 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <RadioButton x:Name="RadioGemini" Grid.Column="0" Content="Gemini" Foreground="#F8FAFC" FontSize="13" 
+                                <RadioButton x:Name="RadioGemini" Grid.Column="0" Content="Gemini" Foreground="#FFFFFF" FontSize="13" 
                                              IsChecked="True" Checked="Provider_Changed" GroupName="ProviderGroup"/>
-                                <RadioButton x:Name="RadioGroq" Grid.Column="1" Content="Groq" Foreground="#F8FAFC" FontSize="13" 
+                                <RadioButton x:Name="RadioGroq" Grid.Column="1" Content="Groq" Foreground="#FFFFFF" FontSize="13" 
                                              Checked="Provider_Changed" GroupName="ProviderGroup"/>
-                                <RadioButton x:Name="RadioOpenRouter" Grid.Column="2" Content="OpenRouter" Foreground="#F8FAFC" FontSize="13" 
+                                <RadioButton x:Name="RadioOpenRouter" Grid.Column="2" Content="OpenRouter" Foreground="#FFFFFF" FontSize="13" 
                                              Checked="Provider_Changed" GroupName="ProviderGroup"/>
                             </Grid>
 
-                            <TextBlock Text="Model Version:" Foreground="#94A3B8" FontSize="12" Margin="0,4,0,6"/>
+                            <TextBlock Text="Model Version:" Foreground="#A1A1AA" FontSize="12" Margin="0,4,0,6"/>
 
                             <!-- Fully Custom Dark Themed ComboBox -->
-                            <ComboBox x:Name="ModelCombo" FontSize="13" Foreground="#F8FAFC" Cursor="Hand">
+                            <ComboBox x:Name="ModelCombo" FontSize="13" Foreground="#FFFFFF" Cursor="Hand">
                                 <ComboBox.Style>
                                     <Style TargetType="ComboBox">
                                         <Setter Property="Template">
@@ -83,13 +83,13 @@
                                                                       ClickMode="Press">
                                                             <ToggleButton.Template>
                                                                 <ControlTemplate TargetType="ToggleButton">
-                                                                    <Border Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10,8">
+                                                                    <Border Background="#0D0C14" BorderBrush="#2A273D" BorderThickness="1" CornerRadius="8" Padding="10,8">
                                                                         <Grid>
                                                                             <Grid.ColumnDefinitions>
                                                                                 <ColumnDefinition Width="*"/>
                                                                                 <ColumnDefinition Width="Auto"/>
                                                                             </Grid.ColumnDefinitions>
-                                                                            <TextBlock Grid.Column="1" Text="▾" Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                                                            <TextBlock Grid.Column="1" Text="▾" Foreground="#A1A1AA" FontSize="12" VerticalAlignment="Center" Margin="6,0,0,0"/>
                                                                         </Grid>
                                                                     </Border>
                                                                 </ControlTemplate>
@@ -106,7 +106,7 @@
                                                                           HorizontalAlignment="Left">
                                                             <ContentPresenter.Resources>
                                                                 <Style TargetType="TextBlock">
-                                                                    <Setter Property="Foreground" Value="#F8FAFC"/>
+                                                                    <Setter Property="Foreground" Value="#FFFFFF"/>
                                                                     <Setter Property="FontSize" Value="13"/>
                                                                     <Setter Property="FontWeight" Value="Medium"/>
                                                                 </Style>
@@ -124,13 +124,13 @@
                                                                   MinWidth="{TemplateBinding ActualWidth}" 
                                                                   MaxHeight="{TemplateBinding MaxDropDownHeight}">
                                                                 <Border x:Name="DropDownBorder" 
-                                                                        Background="#0F172A" 
-                                                                        BorderBrush="#334155" 
+                                                                        Background="#0D0C14" 
+                                                                        BorderBrush="#2A273D" 
                                                                         BorderThickness="1" 
                                                                         CornerRadius="8" 
                                                                         Margin="0,4,0,0">
                                                                     <Border.Effect>
-                                                                        <DropShadowEffect BlurRadius="16" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.6"/>
+                                                                        <DropShadowEffect BlurRadius="20" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.7"/>
                                                                     </Border.Effect>
                                                                     <ScrollViewer Margin="4" SnapsToDevicePixels="True">
                                                                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
@@ -147,8 +147,8 @@
 
                                 <ComboBox.ItemContainerStyle>
                                     <Style TargetType="ComboBoxItem">
-                                        <Setter Property="Background" Value="#0F172A"/>
-                                        <Setter Property="Foreground" Value="#F8FAFC"/>
+                                        <Setter Property="Background" Value="#0D0C14"/>
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
                                         <Setter Property="Padding" Value="10,8"/>
                                         <Setter Property="BorderThickness" Value="0"/>
                                         <Setter Property="Template">
@@ -159,11 +159,11 @@
                                                     </Border>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="ItemBorder" Property="Background" Value="#334155"/>
+                                                            <Setter TargetName="ItemBorder" Property="Background" Value="#211E33"/>
                                                             <Setter Property="Foreground" Value="#FFFFFF"/>
                                                         </Trigger>
                                                         <Trigger Property="IsSelected" Value="True">
-                                                            <Setter TargetName="ItemBorder" Property="Background" Value="#6366F1"/>
+                                                            <Setter TargetName="ItemBorder" Property="Background" Value="#8D3BF0"/>
                                                             <Setter Property="Foreground" Value="#FFFFFF"/>
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
@@ -177,56 +177,56 @@
                     </Border>
 
                     <!-- Card 2: API Keys (Hidden with PasswordBox & Show/Hide Eye Toggle) -->
-                    <Border Background="#1E293B" CornerRadius="12" BorderBrush="#334155" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                    <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="14" Margin="0,0,0,12">
                         <StackPanel>
-                            <TextBlock Text="API KEYS" Foreground="#818CF8" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
+                            <TextBlock Text="API KEYS" Foreground="#8D3BF0" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
 
                             <!-- Gemini API Key -->
-                            <TextBlock Text="Google Gemini API Key:" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,4"/>
+                            <TextBlock Text="Google Gemini API Key:" Foreground="#A1A1AA" FontSize="12" Margin="0,0,0,4"/>
                             <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <PasswordBox x:Name="GeminiKeyPass" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" 
+                                <PasswordBox x:Name="GeminiKeyPass" Background="#0D0C14" Foreground="#FFFFFF" BorderBrush="#2A273D" 
                                              BorderThickness="1,1,0,1" Padding="8,6" FontSize="12"/>
-                                <TextBox x:Name="GeminiKeyText" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" 
+                                <TextBox x:Name="GeminiKeyText" Background="#0D0C14" Foreground="#FFFFFF" BorderBrush="#2A273D" 
                                          BorderThickness="1,1,0,1" Padding="8,6" FontSize="12" Visibility="Collapsed"/>
-                                <Border Grid.Column="1" MouseLeftButtonDown="ToggleGeminiEye_Click" Cursor="Hand" Background="#334155" 
+                                <Border Grid.Column="1" MouseLeftButtonDown="ToggleGeminiEye_Click" Cursor="Hand" Background="#1F1D2E" BorderBrush="#2A273D" BorderThickness="0,1,1,1"
                                         CornerRadius="0,6,6,0" Padding="10,6" VerticalAlignment="Stretch">
                                     <TextBlock x:Name="GeminiEye" Text="👁️" FontSize="11" VerticalAlignment="Center"/>
                                 </Border>
                             </Grid>
 
                             <!-- Groq API Key -->
-                            <TextBlock Text="Groq API Key:" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,4"/>
+                            <TextBlock Text="Groq API Key:" Foreground="#A1A1AA" FontSize="12" Margin="0,0,0,4"/>
                             <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <PasswordBox x:Name="GroqKeyPass" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" 
+                                <PasswordBox x:Name="GroqKeyPass" Background="#0D0C14" Foreground="#FFFFFF" BorderBrush="#2A273D" 
                                              BorderThickness="1,1,0,1" Padding="8,6" FontSize="12"/>
-                                <TextBox x:Name="GroqKeyText" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" 
+                                <TextBox x:Name="GroqKeyText" Background="#0D0C14" Foreground="#FFFFFF" BorderBrush="#2A273D" 
                                          BorderThickness="1,1,0,1" Padding="8,6" FontSize="12" Visibility="Collapsed"/>
-                                <Border Grid.Column="1" MouseLeftButtonDown="ToggleGroqEye_Click" Cursor="Hand" Background="#334155" 
+                                <Border Grid.Column="1" MouseLeftButtonDown="ToggleGroqEye_Click" Cursor="Hand" Background="#1F1D2E" BorderBrush="#2A273D" BorderThickness="0,1,1,1"
                                         CornerRadius="0,6,6,0" Padding="10,6" VerticalAlignment="Stretch">
                                     <TextBlock x:Name="GroqEye" Text="👁️" FontSize="11" VerticalAlignment="Center"/>
                                 </Border>
                             </Grid>
 
                             <!-- OpenRouter API Key -->
-                            <TextBlock Text="OpenRouter API Key:" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,4"/>
+                            <TextBlock Text="OpenRouter API Key:" Foreground="#A1A1AA" FontSize="12" Margin="0,0,0,4"/>
                             <Grid Margin="0,0,0,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <PasswordBox x:Name="OpenRouterKeyPass" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" 
+                                <PasswordBox x:Name="OpenRouterKeyPass" Background="#0D0C14" Foreground="#FFFFFF" BorderBrush="#2A273D" 
                                              BorderThickness="1,1,0,1" Padding="8,6" FontSize="12"/>
-                                <TextBox x:Name="OpenRouterKeyText" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" 
+                                <TextBox x:Name="OpenRouterKeyText" Background="#0D0C14" Foreground="#FFFFFF" BorderBrush="#2A273D" 
                                          BorderThickness="1,1,0,1" Padding="8,6" FontSize="12" Visibility="Collapsed"/>
-                                <Border Grid.Column="1" MouseLeftButtonDown="ToggleOpenRouterEye_Click" Cursor="Hand" Background="#334155" 
+                                <Border Grid.Column="1" MouseLeftButtonDown="ToggleOpenRouterEye_Click" Cursor="Hand" Background="#1F1D2E" BorderBrush="#2A273D" BorderThickness="0,1,1,1"
                                         CornerRadius="0,6,6,0" Padding="10,6" VerticalAlignment="Stretch">
                                     <TextBlock x:Name="OpenRouterEye" Text="👁️" FontSize="11" VerticalAlignment="Center"/>
                                 </Border>
@@ -235,36 +235,37 @@
                     </Border>
 
                     <!-- Card 3: Custom System Prompt -->
-                    <Border Background="#1E293B" CornerRadius="12" BorderBrush="#334155" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                    <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="14" Margin="0,0,0,12">
                         <StackPanel>
                             <Grid Margin="0,0,0,6">
-                                <TextBlock Text="CUSTOM SYSTEM PROMPT" Foreground="#818CF8" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                                <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetPrompt_Click" Cursor="Hand" Background="#334155" CornerRadius="6" Padding="8,3">
-                                    <TextBlock Text="Reset Default" Foreground="#E2E8F0" FontSize="11" FontWeight="Medium"/>
+                                <TextBlock Text="CUSTOM SYSTEM PROMPT" Foreground="#8D3BF0" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetPrompt_Click" Cursor="Hand" Background="#1F1D2E" BorderBrush="#2A273D" BorderThickness="1" CornerRadius="6" Padding="8,3">
+                                    <TextBlock Text="Reset Default" Foreground="#E4E4E7" FontSize="11" FontWeight="Medium"/>
                                 </Border>
                             </Grid>
 
-                            <TextBlock Text="Template instruction sent before screen OCR / text input:" Foreground="#94A3B8" FontSize="11" Margin="0,0,0,6"/>
+                            <TextBlock Text="Template instruction sent before screen OCR / text input:" Foreground="#A1A1AA" FontSize="11" Margin="0,0,0,6"/>
 
-                            <Border Background="#0F172A" CornerRadius="8" BorderBrush="#334155" BorderThickness="1" Padding="8">
+                            <Border Background="#0D0C14" CornerRadius="8" BorderBrush="#2A273D" BorderThickness="1" Padding="8">
                                 <TextBox x:Name="SystemPromptBox" AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="140" MinHeight="80" 
-                                         Background="Transparent" Foreground="#F8FAFC" BorderThickness="0" 
-                                         FontSize="12" FontFamily="Segoe UI" VerticalScrollBarVisibility="Auto"/>
+                                         Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" 
+                                         FontSize="12" FontFamily="Segoe UI" VerticalScrollBarVisibility="Auto"
+                                         SelectionBrush="#8D3BF0" SelectionOpacity="0.4"/>
                             </Border>
                         </StackPanel>
                     </Border>
 
                     <!-- Card 4: Custom Quick Action Tags (Follow-up Buttons) -->
-                    <Border Background="#1E293B" CornerRadius="12" BorderBrush="#334155" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                    <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="14" Margin="0,0,0,12">
                         <StackPanel>
                             <Grid Margin="0,0,0,6">
-                                <TextBlock Text="QUICK ACTION TAGS (FOLLOW-UP BUTTONS)" Foreground="#818CF8" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                                <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetDefaultTags_Click" Cursor="Hand" Background="#334155" CornerRadius="6" Padding="8,3">
-                                    <TextBlock Text="Reset Defaults" Foreground="#E2E8F0" FontSize="11" FontWeight="Medium"/>
+                                <TextBlock Text="QUICK ACTION TAGS (FOLLOW-UP BUTTONS)" Foreground="#8D3BF0" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetDefaultTags_Click" Cursor="Hand" Background="#1F1D2E" BorderBrush="#2A273D" BorderThickness="1" CornerRadius="6" Padding="8,3">
+                                    <TextBlock Text="Reset Defaults" Foreground="#E4E4E7" FontSize="11" FontWeight="Medium"/>
                                 </Border>
                             </Grid>
 
-                            <TextBlock Text="Configure custom follow-up shortcut tags shown in the Answer window:" Foreground="#94A3B8" FontSize="11" Margin="0,0,0,8"/>
+                            <TextBlock Text="Configure custom follow-up shortcut tags shown in the Answer window:" Foreground="#A1A1AA" FontSize="11" Margin="0,0,0,8"/>
 
                             <!-- Table Header -->
                             <Grid Margin="0,0,0,6">
@@ -273,38 +274,38 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="85"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Button Label" Foreground="#64748B" FontSize="11" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="1" Text="AI Prompt / Message Sent" Foreground="#64748B" FontSize="11" FontWeight="SemiBold" Margin="8,0,0,0"/>
-                                <TextBlock Grid.Column="2" Text="Order / Actions" Foreground="#64748B" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="0" Text="Button Label" Foreground="#71717A" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Grid.Column="1" Text="AI Prompt / Message Sent" Foreground="#71717A" FontSize="11" FontWeight="SemiBold" Margin="8,0,0,0"/>
+                                <TextBlock Grid.Column="2" Text="Order / Actions" Foreground="#71717A" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </Grid>
 
                             <!-- Dynamic List of Custom Tags -->
                             <StackPanel x:Name="QuickActionsListPanel" Margin="0,0,0,8"/>
 
                             <!-- Add Tag Button -->
-                            <Border MouseLeftButtonDown="AddTag_Click" Cursor="Hand" Background="#0F172A" BorderBrush="#6366F1" BorderThickness="1" CornerRadius="8" Padding="10,6" HorizontalAlignment="Left">
+                            <Border MouseLeftButtonDown="AddTag_Click" Cursor="Hand" Background="#0D0C14" BorderBrush="#8D3BF0" BorderThickness="1" CornerRadius="8" Padding="10,6" HorizontalAlignment="Left">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="+ " Foreground="#818CF8" FontSize="12" FontWeight="Bold"/>
-                                    <TextBlock Text="Add New Tag" Foreground="#818CF8" FontSize="12" FontWeight="SemiBold"/>
+                                    <TextBlock Text="+ " Foreground="#C4B5FD" FontSize="12" FontWeight="Bold"/>
+                                    <TextBlock Text="Add New Tag" Foreground="#C4B5FD" FontSize="12" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
                     </Border>
 
                     <!-- Card 5: Window Size (Dimensions) -->
-                    <Border Background="#1E293B" CornerRadius="12" BorderBrush="#334155" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                    <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="14" Margin="0,0,0,12">
                         <StackPanel>
                             <Grid Margin="0,0,0,6">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="WINDOW SIZE (DIMENSIONS)" Foreground="#818CF8" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    <TextBlock Text=" • Live Preview ✨" Foreground="#10B981" FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    <TextBlock Text="WINDOW SIZE (DIMENSIONS)" Foreground="#8D3BF0" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock Text=" • Live Preview ✨" Foreground="#A855F7" FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center" Margin="6,0,0,0"/>
                                 </StackPanel>
-                                <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetDefaultSize_Click" Cursor="Hand" Background="#334155" CornerRadius="6" Padding="8,3">
-                                    <TextBlock Text="Reset Default" Foreground="#E2E8F0" FontSize="11" FontWeight="Medium"/>
+                                <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetDefaultSize_Click" Cursor="Hand" Background="#1F1D2E" BorderBrush="#2A273D" BorderThickness="1" CornerRadius="6" Padding="8,3">
+                                    <TextBlock Text="Reset Default" Foreground="#E4E4E7" FontSize="11" FontWeight="Medium"/>
                                 </Border>
                             </Grid>
 
-                            <TextBlock Text="Click a preset or enter dimensions in pixels (applies immediately to the open popup):" Foreground="#94A3B8" FontSize="11" Margin="0,0,0,8"/>
+                            <TextBlock Text="Click a preset or enter dimensions in pixels (applies immediately to the open popup):" Foreground="#A1A1AA" FontSize="11" Margin="0,0,0,8"/>
 
                             <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
@@ -315,56 +316,59 @@
 
                                 <!-- Width Box -->
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Width (px):" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,4"/>
-                                    <TextBox x:Name="WindowWidthBox" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" 
-                                             BorderThickness="1" Padding="8,6" FontSize="12" Text="680" TextChanged="DimensionBox_TextChanged"/>
+                                    <TextBlock Text="Width (px):" Foreground="#A1A1AA" FontSize="12" Margin="0,0,0,4"/>
+                                    <TextBox x:Name="WindowWidthBox" Background="#0D0C14" Foreground="#FFFFFF" BorderBrush="#2A273D" 
+                                             BorderThickness="1" Padding="8,6" FontSize="12" Text="680" TextChanged="DimensionBox_TextChanged"
+                                             SelectionBrush="#8D3BF0" SelectionOpacity="0.4"/>
                                 </StackPanel>
 
                                 <!-- Height Box -->
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Text="Height (px):" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,4"/>
-                                    <TextBox x:Name="WindowHeightBox" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" 
-                                             BorderThickness="1" Padding="8,6" FontSize="12" Text="580" TextChanged="DimensionBox_TextChanged"/>
+                                    <TextBlock Text="Height (px):" Foreground="#A1A1AA" FontSize="12" Margin="0,0,0,4"/>
+                                    <TextBox x:Name="WindowHeightBox" Background="#0D0C14" Foreground="#FFFFFF" BorderBrush="#2A273D" 
+                                             BorderThickness="1" Padding="8,6" FontSize="12" Text="580" TextChanged="DimensionBox_TextChanged"
+                                             SelectionBrush="#8D3BF0" SelectionOpacity="0.4"/>
                                 </StackPanel>
                             </Grid>
 
                             <!-- Quick Size Presets -->
                             <WrapPanel Orientation="Horizontal">
-                                <TextBlock Text="Presets:" Foreground="#64748B" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,4"/>
+                                <TextBlock Text="Presets:" Foreground="#71717A" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,4"/>
                                 
-                                <Border x:Name="PillCompact" MouseLeftButtonDown="PresetSize_Compact" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
-                                    <TextBlock x:Name="TextCompact" Text="Compact (560x480)" Foreground="#94A3B8" FontSize="11"/>
+                                <Border x:Name="PillCompact" MouseLeftButtonDown="PresetSize_Compact" Cursor="Hand" Background="#0D0C14" BorderBrush="#2A273D" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
+                                    <TextBlock x:Name="TextCompact" Text="Compact (560x480)" Foreground="#A1A1AA" FontSize="11"/>
                                 </Border>
-                                <Border x:Name="PillStandard" MouseLeftButtonDown="PresetSize_Standard" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
-                                    <TextBlock x:Name="TextStandard" Text="Standard (680x580)" Foreground="#94A3B8" FontSize="11"/>
+                                <Border x:Name="PillStandard" MouseLeftButtonDown="PresetSize_Standard" Cursor="Hand" Background="#0D0C14" BorderBrush="#2A273D" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
+                                    <TextBlock x:Name="TextStandard" Text="Standard (680x580)" Foreground="#A1A1AA" FontSize="11"/>
                                 </Border>
-                                <Border x:Name="PillWide" MouseLeftButtonDown="PresetSize_Wide" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
-                                    <TextBlock x:Name="TextWide" Text="Wide (820x600)" Foreground="#94A3B8" FontSize="11"/>
+                                <Border x:Name="PillWide" MouseLeftButtonDown="PresetSize_Wide" Cursor="Hand" Background="#0D0C14" BorderBrush="#2A273D" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
+                                    <TextBlock x:Name="TextWide" Text="Wide (820x600)" Foreground="#A1A1AA" FontSize="11"/>
                                 </Border>
-                                <Border x:Name="PillLarge" MouseLeftButtonDown="PresetSize_Large" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
-                                    <TextBlock x:Name="TextLarge" Text="Large (960x720)" Foreground="#94A3B8" FontSize="11"/>
+                                <Border x:Name="PillLarge" MouseLeftButtonDown="PresetSize_Large" Cursor="Hand" Background="#0F172A" BorderBrush="#2A273D" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
+                                    <TextBlock x:Name="TextLarge" Text="Large (960x720)" Foreground="#A1A1AA" FontSize="11"/>
                                 </Border>
-                                <Border x:Name="PillFullScreen" MouseLeftButtonDown="PresetSize_FullScreen" Cursor="Hand" Background="#0F172A" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,0,4">
-                                    <TextBlock x:Name="TextFullScreen" Text="Full Screen (⛶)" Foreground="#94A3B8" FontSize="11"/>
+                                <Border x:Name="PillFullScreen" MouseLeftButtonDown="PresetSize_FullScreen" Cursor="Hand" Background="#0D0C14" BorderBrush="#2A273D" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,0,4">
+                                    <TextBlock x:Name="TextFullScreen" Text="Full Screen (⛶)" Foreground="#A1A1AA" FontSize="11"/>
                                 </Border>
                             </WrapPanel>
                         </StackPanel>
                     </Border>
 
                     <!-- Card 6: Auto-Close Timer -->
-                    <Border Background="#1E293B" CornerRadius="12" BorderBrush="#334155" BorderThickness="1" Padding="14">
+                    <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="14">
                         <StackPanel>
-                            <TextBlock Text="AUTO-CLOSE TIMER" Foreground="#818CF8" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
-                            <TextBlock Text="Seconds before answer window automatically dismisses (enter 0 to keep window open):" Foreground="#94A3B8" FontSize="11" Margin="0,0,0,8"/>
+                            <TextBlock Text="AUTO-CLOSE TIMER" Foreground="#8D3BF0" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
+                            <TextBlock Text="Seconds before answer window automatically dismisses (enter 0 to keep window open):" Foreground="#A1A1AA" FontSize="11" Margin="0,0,0,8"/>
 
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="AutoCloseBox" Background="#0F172A" Foreground="#F8FAFC" BorderBrush="#334155" 
-                                         BorderThickness="1" Padding="8,6" FontSize="12" Text="25"/>
-                                <TextBlock Grid.Column="1" Text="seconds" Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                <TextBox x:Name="AutoCloseBox" Background="#0D0C14" Foreground="#FFFFFF" BorderBrush="#2A273D" 
+                                         BorderThickness="1" Padding="8,6" FontSize="12" Text="25"
+                                         SelectionBrush="#8D3BF0" SelectionOpacity="0.4"/>
+                                <TextBlock Grid.Column="1" Text="seconds" Foreground="#A1A1AA" FontSize="12" VerticalAlignment="Center" Margin="10,0,0,0"/>
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -373,12 +377,18 @@
             </ScrollViewer>
 
             <!-- 3. Footer Actions -->
-            <Border Grid.Row="2" Background="#0F172A" CornerRadius="0,0,15,15" Padding="16,10,16,14">
+            <Border Grid.Row="2" Background="#0A0A0E" CornerRadius="0,0,15,15" Padding="16,10,16,14">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Border MouseLeftButtonDown="Cancel_Click" Cursor="Hand" Background="#334155" CornerRadius="8" Padding="14,6" Margin="0,0,10,0">
-                        <TextBlock Text="Cancel" Foreground="#E2E8F0" FontSize="12" FontWeight="Medium"/>
+                    <Border MouseLeftButtonDown="Cancel_Click" Cursor="Hand" Background="#1F1D2E" BorderBrush="#35314D" BorderThickness="1" CornerRadius="8" Padding="14,6" Margin="0,0,10,0">
+                        <TextBlock Text="Cancel" Foreground="#E4E4E7" FontSize="12" FontWeight="Medium"/>
                     </Border>
-                    <Border MouseLeftButtonDown="Save_Click" Cursor="Hand" Background="#6366F1" CornerRadius="8" Padding="16,6">
+                    <Border MouseLeftButtonDown="Save_Click" Cursor="Hand" CornerRadius="8" Padding="18,6">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#8D3BF0" Offset="0.0"/>
+                                <GradientStop Color="#0B33D3" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
                         <TextBlock Text="Save Settings" Foreground="#FFFFFF" FontSize="12" FontWeight="Bold"/>
                     </Border>
                 </StackPanel>

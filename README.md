@@ -20,8 +20,8 @@ Powered by native **Windows OCR** and support for **Google Gemini**, **Groq Clou
   * Easily switch Providers & Model Versions using dark-themed dropdown controls.
   * **Hidden API Keys**: Input fields are secured with `PasswordBox` and interactive `👁️` Show/Hide eye toggles.
   * **Customizable System Prompt**: Edit the prompt template sent before your text/OCR input, or click "Reset Default" anytime.
-* 🎨 **Linear/Stripe-Inspired Dark SaaS UI (`AnswerWindow.xaml`)**:
-  * Frameless dark glass UI (`#0F172A`) with deep drop shadows and app icon branding.
+* 🎨 **Premium Obsidian & Dual-Gradient Dark UI (`AnswerWindow.xaml`)**:
+  * Frameless luxury obsidian glass UI (`#0A0A0E`) with `#8D3BF0` Electric Purple and `#0B33D3` Deep Royal Blue dual-gradient accents, crisp white typography, and deep drop shadows.
   * **Screen Position & Mode Selector**: Position the popup at `Top-Left ↖`, `Top-Right ↗`, `Center ⊹`, `Bottom-Left ↙`, `Bottom-Right ↘`, or toggle **`Full Screen ⛶`**. Choice is saved directly in `appsettings.json`.
   * **Pause / Resume Timer**: Freeze or resume the auto-dismiss countdown timer anytime using the button or pressing <kbd>Space</kbd>.
   * **One-Click Copy**: Copy AI answers to your clipboard with instant feedback.

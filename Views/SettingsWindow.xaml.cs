@@ -127,25 +127,29 @@ namespace SnapMini.Views
             var labelBox = new TextBox
             {
                 Text = label,
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F172A")),
-                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8FAFC")),
-                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155")),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0D0C14")),
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A273D")),
                 BorderThickness = new Thickness(1),
                 Padding = new Thickness(6, 4, 6, 4),
-                FontSize = 12
+                FontSize = 12,
+                SelectionBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0")),
+                SelectionOpacity = 0.4
             };
             Grid.SetColumn(labelBox, 0);
 
             var promptBox = new TextBox
             {
                 Text = prompt,
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F172A")),
-                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8FAFC")),
-                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155")),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0D0C14")),
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A273D")),
                 BorderThickness = new Thickness(1),
                 Padding = new Thickness(6, 4, 6, 4),
                 FontSize = 12,
-                Margin = new Thickness(8, 0, 0, 0)
+                Margin = new Thickness(8, 0, 0, 0),
+                SelectionBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0")),
+                SelectionOpacity = 0.4
             };
             Grid.SetColumn(promptBox, 1);
 
@@ -170,14 +174,14 @@ namespace SnapMini.Views
             var upIcon = new TextBlock
             {
                 Text = "▲",
-                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")),
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A1A1AA")),
                 FontSize = 10,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
             };
             upBtn.Child = upIcon;
-            upBtn.MouseEnter += (s, e) => { upBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155")); upIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8FAFC")); };
-            upBtn.MouseLeave += (s, e) => { upBtn.Background = Brushes.Transparent; upIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")); };
+            upBtn.MouseEnter += (s, e) => { upBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#211E33")); upIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")); };
+            upBtn.MouseLeave += (s, e) => { upBtn.Background = Brushes.Transparent; upIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A1A1AA")); };
             upBtn.MouseLeftButtonDown += (s, e) =>
             {
                 int index = QuickActionsListPanel.Children.IndexOf(rowGrid);
@@ -202,14 +206,14 @@ namespace SnapMini.Views
             var downIcon = new TextBlock
             {
                 Text = "▼",
-                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")),
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A1A1AA")),
                 FontSize = 10,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
             };
             downBtn.Child = downIcon;
-            downBtn.MouseEnter += (s, e) => { downBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155")); downIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8FAFC")); };
-            downBtn.MouseLeave += (s, e) => { downBtn.Background = Brushes.Transparent; downIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")); };
+            downBtn.MouseEnter += (s, e) => { downBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#211E33")); downIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")); };
+            downBtn.MouseLeave += (s, e) => { downBtn.Background = Brushes.Transparent; downIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A1A1AA")); };
             downBtn.MouseLeftButtonDown += (s, e) =>
             {
                 int index = QuickActionsListPanel.Children.IndexOf(rowGrid);
@@ -360,17 +364,24 @@ namespace SnapMini.Views
         private void HighlightPill(Border? pill, TextBlock? text)
         {
             if (pill == null || text == null) return;
-            pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
-            pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#818CF8"));
-            text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
+            var grad = new LinearGradientBrush
+            {
+                StartPoint = new Point(0, 0),
+                EndPoint = new Point(1, 1)
+            };
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#8D3BF0"), 0.0));
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#0B33D3"), 1.0));
+            pill.Background = grad;
+            pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A855F7"));
+            text.Foreground = Brushes.White;
             text.FontWeight = FontWeights.SemiBold;
         }
 
         private void ResetPresetHighlights()
         {
-            var defaultBg = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F172A"));
-            var defaultBorder = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
-            var defaultFg = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8"));
+            var defaultBg = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0D0C14"));
+            var defaultBorder = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A273D"));
+            var defaultFg = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A1A1AA"));
 
             if (PillCompact != null) { PillCompact.Background = defaultBg; PillCompact.BorderBrush = defaultBorder; }
             if (PillStandard != null) { PillStandard.Background = defaultBg; PillStandard.BorderBrush = defaultBorder; }

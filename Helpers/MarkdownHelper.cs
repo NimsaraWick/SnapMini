@@ -16,24 +16,24 @@ namespace SnapMini.Helpers
     /// </summary>
     public static class MarkdownHelper
     {
-        private static readonly SolidColorBrush TextBrush = new((Color)ColorConverter.ConvertFromString("#F8FAFC"));
+        private static readonly SolidColorBrush TextBrush = new((Color)ColorConverter.ConvertFromString("#F4F4F5"));
         private static readonly SolidColorBrush BoldBrush = new((Color)ColorConverter.ConvertFromString("#FFFFFF"));
-        private static readonly SolidColorBrush MutedBrush = new((Color)ColorConverter.ConvertFromString("#94A3B8"));
-        private static readonly SolidColorBrush AccentBrush = new((Color)ColorConverter.ConvertFromString("#818CF8"));
-        private static readonly SolidColorBrush GreenBrush = new((Color)ColorConverter.ConvertFromString("#10B981"));
-        private static readonly SolidColorBrush UserTagBrush = new((Color)ColorConverter.ConvertFromString("#38BDF8"));
-        private static readonly SolidColorBrush CodeBgBrush = new((Color)ColorConverter.ConvertFromString("#0B1120"));
-        private static readonly SolidColorBrush CodeBorderBrush = new((Color)ColorConverter.ConvertFromString("#334155"));
-        private static readonly SolidColorBrush CodeTextBrush = new((Color)ColorConverter.ConvertFromString("#38BDF8"));
-        private static readonly SolidColorBrush InlineCodeBgBrush = new((Color)ColorConverter.ConvertFromString("#1E293B"));
-        private static readonly SolidColorBrush QuoteBorderBrush = new((Color)ColorConverter.ConvertFromString("#6366F1"));
-        private static readonly SolidColorBrush UserBubbleBgBrush = new((Color)ColorConverter.ConvertFromString("#1E293B"));
-        private static readonly SolidColorBrush TableBgBrush = new((Color)ColorConverter.ConvertFromString("#0F172A"));
-        private static readonly SolidColorBrush TableHeaderBgBrush = new((Color)ColorConverter.ConvertFromString("#1E293B"));
-        private static readonly SolidColorBrush TableHeaderFgBrush = new((Color)ColorConverter.ConvertFromString("#A5B4FC"));
-        private static readonly SolidColorBrush TableBorderBrush = new((Color)ColorConverter.ConvertFromString("#334155"));
-        private static readonly SolidColorBrush TableRowAltBgBrush = new((Color)ColorConverter.ConvertFromString("#162032"));
-        private static readonly SolidColorBrush TableCellBorderBrush = new((Color)ColorConverter.ConvertFromString("#1E293B"));
+        private static readonly SolidColorBrush MutedBrush = new((Color)ColorConverter.ConvertFromString("#A1A1AA"));
+        private static readonly SolidColorBrush AccentBrush = new((Color)ColorConverter.ConvertFromString("#8D3BF0"));
+        private static readonly SolidColorBrush GreenBrush = new((Color)ColorConverter.ConvertFromString("#C4B5FD"));
+        private static readonly SolidColorBrush UserTagBrush = new((Color)ColorConverter.ConvertFromString("#8D3BF0"));
+        private static readonly SolidColorBrush CodeBgBrush = new((Color)ColorConverter.ConvertFromString("#08080C"));
+        private static readonly SolidColorBrush CodeBorderBrush = new((Color)ColorConverter.ConvertFromString("#262338"));
+        private static readonly SolidColorBrush CodeTextBrush = new((Color)ColorConverter.ConvertFromString("#C4B5FD"));
+        private static readonly SolidColorBrush InlineCodeBgBrush = new((Color)ColorConverter.ConvertFromString("#181624"));
+        private static readonly SolidColorBrush QuoteBorderBrush = new((Color)ColorConverter.ConvertFromString("#8D3BF0"));
+        private static readonly SolidColorBrush UserBubbleBgBrush = new((Color)ColorConverter.ConvertFromString("#13121C"));
+        private static readonly SolidColorBrush TableBgBrush = new((Color)ColorConverter.ConvertFromString("#0A0A0E"));
+        private static readonly SolidColorBrush TableHeaderBgBrush = new((Color)ColorConverter.ConvertFromString("#161522"));
+        private static readonly SolidColorBrush TableHeaderFgBrush = new((Color)ColorConverter.ConvertFromString("#C4B5FD"));
+        private static readonly SolidColorBrush TableBorderBrush = new((Color)ColorConverter.ConvertFromString("#262338"));
+        private static readonly SolidColorBrush TableRowAltBgBrush = new((Color)ColorConverter.ConvertFromString("#100F18"));
+        private static readonly SolidColorBrush TableCellBorderBrush = new((Color)ColorConverter.ConvertFromString("#1D1B2B"));
 
         // Regex for Markdown table separator lines (e.g. |---|---| or |:---|:---:|---:|)
         private static readonly Regex TableSeparatorRegex = new(
@@ -78,7 +78,7 @@ namespace SnapMini.Helpers
             var container = new Border
             {
                 Background = UserBubbleBgBrush,
-                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#38BDF8")),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0")),
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(8),
                 Padding = new Thickness(12, 8, 12, 8),
@@ -329,7 +329,7 @@ namespace SnapMini.Helpers
                 case 2:
                     p.FontSize = 16;
                     p.FontWeight = FontWeights.Bold;
-                    p.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A5B4FC"));
+                    p.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD"));
                     p.Margin = new Thickness(0, 8, 0, 5);
                     break;
                 case 3:
@@ -388,7 +388,7 @@ namespace SnapMini.Helpers
             {
                 BorderBrush = QuoteBorderBrush,
                 BorderThickness = new Thickness(3, 0, 0, 0),
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B")),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#13121C")),
                 Padding = new Thickness(10, 6, 10, 6),
                 CornerRadius = new CornerRadius(0, 6, 6, 0),
                 Margin = new Thickness(0, 4, 0, 8)
@@ -430,8 +430,8 @@ namespace SnapMini.Helpers
                 FontFamily = new FontFamily("Consolas, Cascadia Code, Courier New"),
                 FontSize = 12.5,
                 TextWrapping = TextWrapping.Wrap,
-                SelectionBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1")),
-                SelectionOpacity = 0.5,
+                SelectionBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0")),
+                SelectionOpacity = 0.4,
                 Cursor = System.Windows.Input.Cursors.IBeam
             };
 

@@ -95,7 +95,7 @@ namespace SnapMini.Views
             var titleBlock = new TextBlock
             {
                 Text = "Quick Actions:",
-                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B")),
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0")),
                 FontSize = 11,
                 FontWeight = FontWeights.SemiBold,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -110,8 +110,8 @@ namespace SnapMini.Views
 
                 var pill = new Border
                 {
-                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B")),
-                    BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155")),
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#13121C")),
+                    BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#262338")),
                     BorderThickness = new Thickness(1),
                     CornerRadius = new CornerRadius(10),
                     Padding = new Thickness(8, 2, 8, 2),
@@ -123,23 +123,23 @@ namespace SnapMini.Views
                 var text = new TextBlock
                 {
                     Text = tag.Label,
-                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")),
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD")),
                     FontSize = 11
                 };
                 pill.Child = text;
 
-                // Smooth hover feedback
+                // Smooth hover feedback with #8D3BF0 glow
                 pill.MouseEnter += (s, e) =>
                 {
-                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
-                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
-                    text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8FAFC"));
+                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#211E33"));
+                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0"));
+                    text.Foreground = Brushes.White;
                 };
                 pill.MouseLeave += (s, e) =>
                 {
-                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
-                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
-                    text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8"));
+                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#13121C"));
+                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#262338"));
+                    text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD"));
                 };
 
                 string promptToSend = tag.Prompt;
@@ -257,9 +257,10 @@ namespace SnapMini.Views
             _isPaused = true;
             PauseBtnText.Text = "Resume";
             PauseIcon.Text = "▶ ";
-            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0"));
+            PauseBtn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A855F7"));
             TimerLabel.Text = $"Chat active (Paused)";
-            AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
+            AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C084FC"));
         }
 
         private void ResumeTimer()
@@ -270,9 +271,17 @@ namespace SnapMini.Views
             _isPaused = false;
             PauseBtnText.Text = "Pause";
             PauseIcon.Text = "⏸ ";
-            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
+            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1F1D2E"));
+            PauseBtn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#35314D"));
             TimerLabel.Text = $"Auto closing in {(_ticksRemaining / 10) + 1}s";
-            AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+            var grad = new LinearGradientBrush
+            {
+                StartPoint = new Point(0, 0),
+                EndPoint = new Point(1, 0)
+            };
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#8D3BF0"), 0.0));
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#0B33D3"), 1.0));
+            AutoCloseProgress.Foreground = grad;
         }
 
         private void PauseButton_Click(object sender, MouseButtonEventArgs e)
@@ -504,18 +513,42 @@ namespace SnapMini.Views
 
         private void HighlightButton(System.Windows.Controls.Border btn)
         {
-            btn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+            var grad = new LinearGradientBrush
+            {
+                StartPoint = new Point(0, 0),
+                EndPoint = new Point(1, 1)
+            };
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#8D3BF0"), 0.0));
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#0B33D3"), 1.0));
+            btn.Background = grad;
+            if (btn.Child is TextBlock tb)
+            {
+                tb.Foreground = Brushes.White;
+                tb.FontWeight = FontWeights.Bold;
+            }
         }
 
         private void ResetButtonHighlights()
         {
             var transparent = Brushes.Transparent;
-            BtnTopLeft.Background = transparent;
-            BtnTopRight.Background = transparent;
-            BtnCenter.Background = transparent;
-            BtnBottomLeft.Background = transparent;
-            BtnBottomRight.Background = transparent;
-            BtnFullScreen.Background = transparent;
+            var muted = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A1A1AA"));
+
+            void ResetBtn(System.Windows.Controls.Border btn)
+            {
+                btn.Background = transparent;
+                if (btn.Child is TextBlock tb)
+                {
+                    tb.Foreground = muted;
+                    tb.FontWeight = FontWeights.Normal;
+                }
+            }
+
+            ResetBtn(BtnTopLeft);
+            ResetBtn(BtnTopRight);
+            ResetBtn(BtnCenter);
+            ResetBtn(BtnBottomLeft);
+            ResetBtn(BtnBottomRight);
+            ResetBtn(BtnFullScreen);
         }
 
         private void SetPos_TopLeft(object sender, MouseButtonEventArgs e) => ApplyPosition("TopLeft");
