@@ -26,7 +26,7 @@ namespace SnapMini
 
             // Load custom System Tray icon from Images/SMini.png
             Icon trayIconImage = SystemIcons.Application;
-            string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "SMini.png");
+            string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "SMini_.png");
 
             if (File.Exists(iconPath))
             {

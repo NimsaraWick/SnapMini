@@ -83,7 +83,7 @@ dotnet run
 ```
 
 ### Publish Standalone `.exe`
-To build a single standalone `SnapMini.exe` executable with embedded custom branding (`SMini_icon`):
+To build a single standalone `SnapMini.exe` executable with embedded custom branding (`SMini_icon_`):
 
 ```powershell
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true

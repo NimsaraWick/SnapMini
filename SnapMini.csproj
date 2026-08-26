@@ -13,7 +13,7 @@
     <UseWindowsForms>true</UseWindowsForms>
 
     <!-- Executable Icon -->
-    <ApplicationIcon>Images\SMini_icon.ico</ApplicationIcon>
+    <ApplicationIcon>Images\SMini_icon_.ico</ApplicationIcon>
 
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
