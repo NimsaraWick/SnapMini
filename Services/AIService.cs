@@ -128,6 +128,7 @@ namespace SnapMini.Services
             public int WindowWidth { get; set; } = 680;
             public int WindowHeight { get; set; } = 580;
             public int AutoCloseSeconds { get; set; } = 25;
+            public bool AlwaysOnTop { get; set; } = false;
             public System.Collections.Generic.List<QuickActionTag> QuickActions { get; set; } = GetDefaultQuickActions();
         }
 
@@ -157,6 +158,7 @@ namespace SnapMini.Services
                     if (root.TryGetProperty("WindowWidth", out var ww)) settings.WindowWidth = ww.GetInt32();
                     if (root.TryGetProperty("WindowHeight", out var wh)) settings.WindowHeight = wh.GetInt32();
                     if (root.TryGetProperty("AutoCloseSeconds", out var acs)) settings.AutoCloseSeconds = acs.GetInt32();
+                    if (root.TryGetProperty("AlwaysOnTop", out var aot)) settings.AlwaysOnTop = aot.GetBoolean();
 
                     if (root.TryGetProperty("QuickActions", out var qaArray) && qaArray.ValueKind == JsonValueKind.Array)
                     {
@@ -203,6 +205,7 @@ namespace SnapMini.Services
                     WindowWidth = settings.WindowWidth > 0 ? settings.WindowWidth : 680,
                     WindowHeight = settings.WindowHeight > 0 ? settings.WindowHeight : 580,
                     AutoCloseSeconds = settings.AutoCloseSeconds,
+                    AlwaysOnTop = settings.AlwaysOnTop,
                     QuickActions = settings.QuickActions ?? GetDefaultQuickActions()
                 };
 

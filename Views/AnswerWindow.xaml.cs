@@ -384,6 +384,8 @@ namespace SnapMini.Views
                 };
                 ModelTagText.Text = AIService.GetModelDisplayName(provider, modelId);
                 LoadQuickActionTags();
+                this.Topmost = settings.AlwaysOnTop;
+                UpdatePinVisuals();
                 ApplyPosition(ReadSavedPosition());
             }
         }
@@ -408,9 +410,42 @@ namespace SnapMini.Views
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            var settings = AIService.ReadSettings();
+            this.Topmost = settings.AlwaysOnTop;
+            UpdatePinVisuals();
+
             string savedPos = ReadSavedPosition();
             ApplyPosition(savedPos);
             this.Focus();
+        }
+
+        private void PinButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            this.Topmost = !this.Topmost;
+
+            var settings = AIService.ReadSettings();
+            settings.AlwaysOnTop = this.Topmost;
+            AIService.SaveSettings(settings);
+
+            UpdatePinVisuals();
+        }
+
+        private void UpdatePinVisuals()
+        {
+            if (PinBtn == null || PinIconText == null) return;
+
+            if (this.Topmost)
+            {
+                PinIconText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0"));
+                PinBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1F1B38"));
+                PinBtn.ToolTip = "Always on Top: ON (Click to unpin window)";
+            }
+            else
+            {
+                PinIconText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A1A1AA"));
+                PinBtn.Background = Brushes.Transparent;
+                PinBtn.ToolTip = "Always on Top: OFF (Click to pin window on top)";
+            }
         }
 
         private string ReadSavedPosition()

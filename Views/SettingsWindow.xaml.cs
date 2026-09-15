@@ -95,6 +95,8 @@ namespace SnapMini.Views
 
             SystemPromptBox.Text = string.IsNullOrWhiteSpace(settings.SystemPrompt) ? AIService.DefaultSystemPrompt : settings.SystemPrompt;
             AutoCloseBox.Text = settings.AutoCloseSeconds >= 0 ? settings.AutoCloseSeconds.ToString() : "25";
+            AlwaysOnTopCheckBox.IsChecked = settings.AlwaysOnTop;
+            this.Topmost = settings.AlwaysOnTop;
 
             // Load Window Size
             int w = settings.WindowWidth > 0 ? settings.WindowWidth : 680;
@@ -553,6 +555,9 @@ namespace SnapMini.Views
                     }
                 }
                 settings.QuickActions = customTags;
+
+                // Save Always-On-Top
+                settings.AlwaysOnTop = AlwaysOnTopCheckBox.IsChecked == true;
 
                 AIService.SaveSettings(settings);
                 IsSaved = true;

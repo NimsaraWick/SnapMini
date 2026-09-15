@@ -128,4 +128,4 @@ SnapMini/
 
 ## 🛡️ License & Credits
 
-Built with C# .NET 8 WPF. Native OCR provided by `Windows.Media.Ocr`. AI Inference powered by Google Gemini API, Groq Cloud & OpenRouter.
+Built with C# .NET 10 WPF. Native OCR provided by `Windows.Media.Ocr`. AI Inference powered by Google Gemini API, Groq Cloud & OpenRouter.

@@ -6,7 +6,7 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        Topmost="True"
+        Topmost="False"
         WindowStartupLocation="CenterScreen"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
@@ -355,7 +355,7 @@
                     </Border>
 
                     <!-- Card 6: Auto-Close Timer -->
-                    <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="14">
+                    <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="14" Margin="0,0,0,12">
                         <StackPanel>
                             <TextBlock Text="AUTO-CLOSE TIMER" Foreground="#8D3BF0" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
                             <TextBlock Text="Seconds before answer window automatically dismisses (enter 0 to keep window open):" Foreground="#A1A1AA" FontSize="11" Margin="0,0,0,8"/>
@@ -370,6 +370,15 @@
                                          SelectionBrush="#8D3BF0" SelectionOpacity="0.4"/>
                                 <TextBlock Grid.Column="1" Text="seconds" Foreground="#A1A1AA" FontSize="12" VerticalAlignment="Center" Margin="10,0,0,0"/>
                             </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Card 7: Window Behavior & Overlay -->
+                    <Border Background="#13121C" CornerRadius="12" BorderBrush="#262338" BorderThickness="1" Padding="14">
+                        <StackPanel>
+                            <TextBlock Text="WINDOW OVERLAY &amp; BEHAVIOR" Foreground="#8D3BF0" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
+                            <CheckBox x:Name="AlwaysOnTopCheckBox" Content="Keep window always on top (overlay other apps &amp; tabs)" 
+                                      Foreground="#E4E4E7" FontSize="12" VerticalContentAlignment="Center" Cursor="Hand"/>
                         </StackPanel>
                     </Border>
 
