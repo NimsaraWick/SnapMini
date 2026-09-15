@@ -16,24 +16,24 @@ namespace SnapMini.Helpers
     /// </summary>
     public static class MarkdownHelper
     {
-        private static readonly SolidColorBrush TextBrush = new((Color)ColorConverter.ConvertFromString("#F4F4F5"));
+        private static readonly SolidColorBrush TextBrush = new((Color)ColorConverter.ConvertFromString("#F5F3FF"));
         private static readonly SolidColorBrush BoldBrush = new((Color)ColorConverter.ConvertFromString("#FFFFFF"));
-        private static readonly SolidColorBrush MutedBrush = new((Color)ColorConverter.ConvertFromString("#A1A1AA"));
-        private static readonly SolidColorBrush AccentBrush = new((Color)ColorConverter.ConvertFromString("#8D3BF0"));
-        private static readonly SolidColorBrush GreenBrush = new((Color)ColorConverter.ConvertFromString("#C4B5FD"));
-        private static readonly SolidColorBrush UserTagBrush = new((Color)ColorConverter.ConvertFromString("#8D3BF0"));
-        private static readonly SolidColorBrush CodeBgBrush = new((Color)ColorConverter.ConvertFromString("#08080C"));
-        private static readonly SolidColorBrush CodeBorderBrush = new((Color)ColorConverter.ConvertFromString("#262338"));
-        private static readonly SolidColorBrush CodeTextBrush = new((Color)ColorConverter.ConvertFromString("#C4B5FD"));
-        private static readonly SolidColorBrush InlineCodeBgBrush = new((Color)ColorConverter.ConvertFromString("#181624"));
-        private static readonly SolidColorBrush QuoteBorderBrush = new((Color)ColorConverter.ConvertFromString("#8D3BF0"));
-        private static readonly SolidColorBrush UserBubbleBgBrush = new((Color)ColorConverter.ConvertFromString("#13121C"));
-        private static readonly SolidColorBrush TableBgBrush = new((Color)ColorConverter.ConvertFromString("#0A0A0E"));
-        private static readonly SolidColorBrush TableHeaderBgBrush = new((Color)ColorConverter.ConvertFromString("#161522"));
-        private static readonly SolidColorBrush TableHeaderFgBrush = new((Color)ColorConverter.ConvertFromString("#C4B5FD"));
-        private static readonly SolidColorBrush TableBorderBrush = new((Color)ColorConverter.ConvertFromString("#262338"));
-        private static readonly SolidColorBrush TableRowAltBgBrush = new((Color)ColorConverter.ConvertFromString("#100F18"));
-        private static readonly SolidColorBrush TableCellBorderBrush = new((Color)ColorConverter.ConvertFromString("#1D1B2B"));
+        private static readonly SolidColorBrush MutedBrush = new((Color)ColorConverter.ConvertFromString("#C4B5FD"));
+        private static readonly SolidColorBrush AccentBrush = new((Color)ColorConverter.ConvertFromString("#C084FC"));
+        private static readonly SolidColorBrush GreenBrush = new((Color)ColorConverter.ConvertFromString("#E9D5FF"));
+        private static readonly SolidColorBrush UserTagBrush = new((Color)ColorConverter.ConvertFromString("#C084FC"));
+        private static readonly SolidColorBrush CodeBgBrush = new((Color)ColorConverter.ConvertFromString("#040407"));
+        private static readonly SolidColorBrush CodeBorderBrush = new((Color)ColorConverter.ConvertFromString("#2E1848"));
+        private static readonly SolidColorBrush CodeTextBrush = new((Color)ColorConverter.ConvertFromString("#D8B4FE"));
+        private static readonly SolidColorBrush InlineCodeBgBrush = new((Color)ColorConverter.ConvertFromString("#140A26"));
+        private static readonly SolidColorBrush QuoteBorderBrush = new((Color)ColorConverter.ConvertFromString("#A855F7"));
+        private static readonly SolidColorBrush UserBubbleBgBrush = new((Color)ColorConverter.ConvertFromString("#08070D"));
+        private static readonly SolidColorBrush TableBgBrush = new((Color)ColorConverter.ConvertFromString("#000000"));
+        private static readonly SolidColorBrush TableHeaderBgBrush = new((Color)ColorConverter.ConvertFromString("#120924"));
+        private static readonly SolidColorBrush TableHeaderFgBrush = new((Color)ColorConverter.ConvertFromString("#E9D5FF"));
+        private static readonly SolidColorBrush TableBorderBrush = new((Color)ColorConverter.ConvertFromString("#2E1848"));
+        private static readonly SolidColorBrush TableRowAltBgBrush = new((Color)ColorConverter.ConvertFromString("#090712"));
+        private static readonly SolidColorBrush TableCellBorderBrush = new((Color)ColorConverter.ConvertFromString("#1E1133"));
 
         // Regex for Markdown table separator lines (e.g. |---|---| or |:---|:---:|---:|)
         private static readonly Regex TableSeparatorRegex = new(

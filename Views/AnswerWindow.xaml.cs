@@ -25,6 +25,7 @@ namespace SnapMini.Views
         private bool _isPaused = false;
         private bool _isClosing = false;
         private bool _isSending = false;
+        private bool _isContextExpanded = false;
         private readonly string _initialAnswerText;
         private readonly List<AIService.ChatMessage> _chatHistory = new();
 
@@ -95,7 +96,7 @@ namespace SnapMini.Views
             var titleBlock = new TextBlock
             {
                 Text = "Quick Actions:",
-                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0")),
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C084FC")),
                 FontSize = 11,
                 FontWeight = FontWeights.SemiBold,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -110,8 +111,8 @@ namespace SnapMini.Views
 
                 var pill = new Border
                 {
-                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#13121C")),
-                    BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#262338")),
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#120924")),
+                    BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3B1F5E")),
                     BorderThickness = new Thickness(1),
                     CornerRadius = new CornerRadius(10),
                     Padding = new Thickness(8, 2, 8, 2),
@@ -123,23 +124,23 @@ namespace SnapMini.Views
                 var text = new TextBlock
                 {
                     Text = tag.Label,
-                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD")),
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D8B4FE")),
                     FontSize = 11
                 };
                 pill.Child = text;
 
-                // Smooth hover feedback with #8D3BF0 glow
+                // Smooth hover feedback with purple glow
                 pill.MouseEnter += (s, e) =>
                 {
-                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#211E33"));
-                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0"));
+                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#251245"));
+                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A855F7"));
                     text.Foreground = Brushes.White;
                 };
                 pill.MouseLeave += (s, e) =>
                 {
-                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#13121C"));
-                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#262338"));
-                    text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD"));
+                    pill.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#120924"));
+                    pill.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3B1F5E"));
+                    text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D8B4FE"));
                 };
 
                 string promptToSend = tag.Prompt;
@@ -257,7 +258,7 @@ namespace SnapMini.Views
             _isPaused = true;
             PauseBtnText.Text = "Resume";
             PauseIcon.Text = "▶ ";
-            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0"));
+            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9333EA"));
             PauseBtn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A855F7"));
             TimerLabel.Text = $"Chat active (Paused)";
             AutoCloseProgress.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C084FC"));
@@ -271,16 +272,16 @@ namespace SnapMini.Views
             _isPaused = false;
             PauseBtnText.Text = "Pause";
             PauseIcon.Text = "⏸ ";
-            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1F1D2E"));
-            PauseBtn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#35314D"));
+            PauseBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A0D30"));
+            PauseBtn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3B1F5E"));
             TimerLabel.Text = $"Auto closing in {(_ticksRemaining / 10) + 1}s";
             var grad = new LinearGradientBrush
             {
                 StartPoint = new Point(0, 0),
                 EndPoint = new Point(1, 0)
             };
-            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#8D3BF0"), 0.0));
-            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#0B33D3"), 1.0));
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#9333EA"), 0.0));
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#4F46E5"), 1.0));
             AutoCloseProgress.Foreground = grad;
         }
 
@@ -436,13 +437,13 @@ namespace SnapMini.Views
 
             if (this.Topmost)
             {
-                PinIconText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8D3BF0"));
-                PinBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1F1B38"));
+                PinIconText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C084FC"));
+                PinBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#251245"));
                 PinBtn.ToolTip = "Always on Top: ON (Click to unpin window)";
             }
             else
             {
-                PinIconText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A1A1AA"));
+                PinIconText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD"));
                 PinBtn.Background = Brushes.Transparent;
                 PinBtn.ToolTip = "Always on Top: OFF (Click to pin window on top)";
             }
@@ -643,6 +644,25 @@ namespace SnapMini.Views
             catch (Exception ex)
             {
                 MessageBox.Show($"Could not copy: {ex.Message}", "SnapMini");
+            }
+        }
+
+        private void ExpandContextBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+            _isContextExpanded = !_isContextExpanded;
+            if (_isContextExpanded)
+            {
+                QuestionBox.MaxHeight = double.PositiveInfinity;
+                ExpandContextIcon.Text = "▲";
+                ExpandContextIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E9D5FF"));
+                ExpandContextBtn.ToolTip = "Collapse Context";
+            }
+            else
+            {
+                QuestionBox.MaxHeight = 90;
+                ExpandContextIcon.Text = "▼";
+                ExpandContextIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C084FC"));
+                ExpandContextBtn.ToolTip = "Expand Context";
             }
         }
 
