@@ -129,6 +129,10 @@ namespace SnapMini.Services
             public int WindowHeight { get; set; } = 580;
             public int AutoCloseSeconds { get; set; } = 25;
             public bool AlwaysOnTop { get; set; } = false;
+            public string GoogleDriveFolderId { get; set; } = "";
+            public string GoogleDocsCustomLink { get; set; } = "";
+            public string GoogleCredentialsJson { get; set; } = "";
+            public bool EnableGoogleExport { get; set; } = true;
             public System.Collections.Generic.List<QuickActionTag> QuickActions { get; set; } = GetDefaultQuickActions();
         }
 
@@ -159,6 +163,10 @@ namespace SnapMini.Services
                     if (root.TryGetProperty("WindowHeight", out var wh)) settings.WindowHeight = wh.GetInt32();
                     if (root.TryGetProperty("AutoCloseSeconds", out var acs)) settings.AutoCloseSeconds = acs.GetInt32();
                     if (root.TryGetProperty("AlwaysOnTop", out var aot)) settings.AlwaysOnTop = aot.GetBoolean();
+                    if (root.TryGetProperty("GoogleDriveFolderId", out var gdf)) settings.GoogleDriveFolderId = gdf.GetString() ?? "";
+                    if (root.TryGetProperty("GoogleDocsCustomLink", out var gdl)) settings.GoogleDocsCustomLink = gdl.GetString() ?? "";
+                    if (root.TryGetProperty("GoogleCredentialsJson", out var gcj)) settings.GoogleCredentialsJson = gcj.GetString() ?? "";
+                    if (root.TryGetProperty("EnableGoogleExport", out var ege)) settings.EnableGoogleExport = ege.GetBoolean();
 
                     if (root.TryGetProperty("QuickActions", out var qaArray) && qaArray.ValueKind == JsonValueKind.Array)
                     {
@@ -206,6 +214,10 @@ namespace SnapMini.Services
                     WindowHeight = settings.WindowHeight > 0 ? settings.WindowHeight : 580,
                     AutoCloseSeconds = settings.AutoCloseSeconds,
                     AlwaysOnTop = settings.AlwaysOnTop,
+                    GoogleDriveFolderId = settings.GoogleDriveFolderId ?? "",
+                    GoogleDocsCustomLink = settings.GoogleDocsCustomLink ?? "",
+                    GoogleCredentialsJson = settings.GoogleCredentialsJson ?? "",
+                    EnableGoogleExport = settings.EnableGoogleExport,
                     QuickActions = settings.QuickActions ?? GetDefaultQuickActions()
                 };
 

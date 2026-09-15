@@ -98,6 +98,11 @@ namespace SnapMini.Views
             AlwaysOnTopCheckBox.IsChecked = settings.AlwaysOnTop;
             this.Topmost = settings.AlwaysOnTop;
 
+            // Load Google Settings
+            GoogleFolderBox.Text = settings.GoogleDriveFolderId ?? "";
+            GoogleDocsLinkBox.Text = settings.GoogleDocsCustomLink ?? "";
+            GoogleCredentialsBox.Text = settings.GoogleCredentialsJson ?? "";
+
             // Load Window Size
             int w = settings.WindowWidth > 0 ? settings.WindowWidth : 680;
             int h = settings.WindowHeight > 0 ? settings.WindowHeight : 580;
@@ -107,7 +112,79 @@ namespace SnapMini.Views
 
             // Load Custom Quick Action Tags
             LoadQuickActionTags(settings.QuickActions);
+
+            // Default to AI & Models Tab
+            SelectTab("Models");
         }
+
+        #region Tab Navigation Logic
+
+        private void Tab_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.Tag is string tabName)
+            {
+                SelectTab(tabName);
+            }
+        }
+
+        private void SelectTab(string tabName)
+        {
+            ResetTabStyle(TabBtn_Models, TabText_Models);
+            ResetTabStyle(TabBtn_Prompts, TabText_Prompts);
+            ResetTabStyle(TabBtn_Window, TabText_Window);
+            ResetTabStyle(TabBtn_Google, TabText_Google);
+
+            TabPanel_Models.Visibility = Visibility.Collapsed;
+            TabPanel_Prompts.Visibility = Visibility.Collapsed;
+            TabPanel_Window.Visibility = Visibility.Collapsed;
+            TabPanel_Google.Visibility = Visibility.Collapsed;
+
+            switch (tabName)
+            {
+                case "Prompts":
+                    HighlightTabStyle(TabBtn_Prompts, TabText_Prompts);
+                    TabPanel_Prompts.Visibility = Visibility.Visible;
+                    break;
+                case "Window":
+                    HighlightTabStyle(TabBtn_Window, TabText_Window);
+                    TabPanel_Window.Visibility = Visibility.Visible;
+                    break;
+                case "Google":
+                    HighlightTabStyle(TabBtn_Google, TabText_Google);
+                    TabPanel_Google.Visibility = Visibility.Visible;
+                    break;
+                case "Models":
+                default:
+                    HighlightTabStyle(TabBtn_Models, TabText_Models);
+                    TabPanel_Models.Visibility = Visibility.Visible;
+                    break;
+            }
+        }
+
+        private void HighlightTabStyle(Border btn, TextBlock txt)
+        {
+            if (btn == null || txt == null) return;
+            var grad = new LinearGradientBrush
+            {
+                StartPoint = new Point(0, 0),
+                EndPoint = new Point(1, 1)
+            };
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#9333EA"), 0.0));
+            grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#4F46E5"), 1.0));
+            btn.Background = grad;
+            txt.Foreground = Brushes.White;
+            txt.FontWeight = FontWeights.Bold;
+        }
+
+        private void ResetTabStyle(Border btn, TextBlock txt)
+        {
+            if (btn == null || txt == null) return;
+            btn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#120924"));
+            txt.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D8B4FE"));
+            txt.FontWeight = FontWeights.Medium;
+        }
+
+        #endregion
 
         private void LoadQuickActionTags(List<AIService.QuickActionTag>? tags)
         {
@@ -558,6 +635,11 @@ namespace SnapMini.Views
 
                 // Save Always-On-Top
                 settings.AlwaysOnTop = AlwaysOnTopCheckBox.IsChecked == true;
+
+                // Save Google Settings
+                settings.GoogleDriveFolderId = GoogleFolderBox.Text.Trim();
+                settings.GoogleDocsCustomLink = GoogleDocsLinkBox.Text.Trim();
+                settings.GoogleCredentialsJson = GoogleCredentialsBox.Text.Trim();
 
                 AIService.SaveSettings(settings);
                 IsSaved = true;

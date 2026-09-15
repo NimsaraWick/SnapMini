@@ -24,9 +24,16 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="google_credentials.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Images\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Docs.v1" Version="1.69.0.3701" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.76.0.4261" />
   </ItemGroup>
 
 </Project>

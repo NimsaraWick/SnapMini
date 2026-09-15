@@ -139,7 +139,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- AI Conversation Section Header Bar with Copy Button on the Right -->
+                <!-- AI Conversation Section Header Bar with Save to Docs & Copy Button on the Right -->
                 <Grid Grid.Row="0" Margin="0,0,0,4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -148,15 +148,27 @@
 
                     <TextBlock Grid.Column="0" Text="AI CONVERSATION" Foreground="#C084FC" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
 
-                    <!-- Copy Button Card -->
-                    <Border Grid.Column="1" x:Name="CopyBtn" MouseLeftButtonDown="CopyButton_Click" Cursor="Hand" 
-                            Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" 
-                            Padding="8,3" VerticalAlignment="Center" ToolTip="Copy Answer (Ctrl+C)">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="CopyIcon" Text="📋 " Foreground="#E9D5FF" FontSize="11"/>
-                            <TextBlock x:Name="CopyBtnText" Text="Copy" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
-                        </StackPanel>
-                    </Border>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Save to Google Docs Button -->
+                        <Border x:Name="SaveDocBtn" MouseLeftButtonDown="SaveToDocs_Click" Cursor="Hand" 
+                                Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" 
+                                Padding="8,3" Margin="0,0,6,0" VerticalAlignment="Center" ToolTip="Save Q&amp;A to Google Docs / Drive">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="SaveDocIcon" Text="📄 " Foreground="#E9D5FF" FontSize="11"/>
+                                <TextBlock x:Name="SaveDocBtnText" Text="Save to Docs" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Copy Button Card -->
+                        <Border x:Name="CopyBtn" MouseLeftButtonDown="CopyButton_Click" Cursor="Hand" 
+                                Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" 
+                                Padding="8,3" VerticalAlignment="Center" ToolTip="Copy Answer (Ctrl+C)">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="CopyIcon" Text="📋 " Foreground="#E9D5FF" FontSize="11"/>
+                                <TextBlock x:Name="CopyBtnText" Text="Copy" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
                 </Grid>
 
                 <Border Grid.Row="1" Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="12,10">

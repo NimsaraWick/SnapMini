@@ -647,6 +647,40 @@ namespace SnapMini.Views
             }
         }
 
+        private async void SaveToDocs_Click(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                PauseTimer();
+                SaveDocBtnText.Text = "Saving...";
+                SaveDocIcon.Text = "⏳ ";
+
+                string questionText = QuestionBox.Text;
+                var lastAssistant = _chatHistory.FindLast(m => m.Role == "assistant");
+                string answerText = lastAssistant?.Content ?? _initialAnswerText;
+
+                string target = await GoogleDocsService.ExportQaSummaryAsync(questionText, answerText);
+
+                SaveDocBtnText.Text = "Saved!";
+                SaveDocIcon.Text = "✓ ";
+
+                var resetTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2.5) };
+                resetTimer.Tick += (s, args) =>
+                {
+                    resetTimer.Stop();
+                    SaveDocBtnText.Text = "Save to Docs";
+                    SaveDocIcon.Text = "📄 ";
+                };
+                resetTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not save to Google Docs:\n{ex.Message}", "SnapMini Google Export");
+                SaveDocBtnText.Text = "Save to Docs";
+                SaveDocIcon.Text = "📄 ";
+            }
+        }
+
         private void ExpandContextBtn_Click(object sender, MouseButtonEventArgs e)
         {
             _isContextExpanded = !_isContextExpanded;

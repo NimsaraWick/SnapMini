@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SnapMini Settings"
-        Height="780" Width="600"
+        Height="660" Width="600"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
@@ -19,12 +19,13 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/> <!-- Header -->
-                <RowDefinition Height="*"/>    <!-- Content Cards -->
-                <RowDefinition Height="Auto"/> <!-- Footer -->
+                <RowDefinition Height="Auto"/> <!-- 0. Header -->
+                <RowDefinition Height="Auto"/> <!-- 1. Tab Bar -->
+                <RowDefinition Height="*"/>    <!-- 2. Content Panels -->
+                <RowDefinition Height="Auto"/> <!-- 3. Footer -->
             </Grid.RowDefinitions>
 
-            <!-- 1. Header (Draggable) -->
+            <!-- 0. Header (Draggable) -->
             <Border Grid.Row="0" Background="#040407" CornerRadius="15,15,0,0" Padding="16,12" MouseDown="Header_MouseDown">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -43,350 +44,407 @@
                 </Grid>
             </Border>
 
-            <!-- 2. Scrollable Settings Cards -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="16,14,16,8">
+            <!-- 1. Navigation Tab Bar -->
+            <Border Grid.Row="1" Background="#040407" Padding="16,4,16,10" BorderBrush="#1F1233" BorderThickness="0,0,0,1">
+                <UniformGrid Columns="4">
+                    <Border x:Name="TabBtn_Models" MouseLeftButtonDown="Tab_Click" Tag="Models" Cursor="Hand" CornerRadius="8" Padding="6,7" Margin="0,0,3,0">
+                        <TextBlock x:Name="TabText_Models" Text="🤖 AI &amp; Models" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border x:Name="TabBtn_Prompts" MouseLeftButtonDown="Tab_Click" Tag="Prompts" Cursor="Hand" CornerRadius="8" Padding="6,7" Margin="0,0,3,0">
+                        <TextBlock x:Name="TabText_Prompts" Text="💬 Prompts &amp; Tags" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border x:Name="TabBtn_Window" MouseLeftButtonDown="Tab_Click" Tag="Window" Cursor="Hand" CornerRadius="8" Padding="6,7" Margin="0,0,3,0">
+                        <TextBlock x:Name="TabText_Window" Text="🖼️ Window &amp; Size" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border x:Name="TabBtn_Google" MouseLeftButtonDown="Tab_Click" Tag="Google" Cursor="Hand" CornerRadius="8" Padding="6,7">
+                        <TextBlock x:Name="TabText_Google" Text="📄 Google Export" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </UniformGrid>
+            </Border>
+
+            <!-- 2. Scrollable Content Tab Panels -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="16,12,16,8">
                 <StackPanel>
 
-                    <!-- Card 1: Provider Selection -->
-                    <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
-                        <StackPanel>
-                            <TextBlock Text="AI PROVIDER &amp; MODEL" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
+                    <!-- TAB 1: AI & MODELS -->
+                    <StackPanel x:Name="TabPanel_Models" Visibility="Visible">
+                        <!-- Card 1: Provider Selection -->
+                        <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="AI PROVIDER &amp; MODEL" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <RadioButton x:Name="RadioGemini" Grid.Column="0" Content="Gemini" Foreground="#E9D5FF" FontSize="13" 
-                                             IsChecked="True" Checked="Provider_Changed" GroupName="ProviderGroup"/>
-                                <RadioButton x:Name="RadioGroq" Grid.Column="1" Content="Groq" Foreground="#E9D5FF" FontSize="13" 
-                                             Checked="Provider_Changed" GroupName="ProviderGroup"/>
-                                <RadioButton x:Name="RadioOpenRouter" Grid.Column="2" Content="OpenRouter" Foreground="#E9D5FF" FontSize="13" 
-                                             Checked="Provider_Changed" GroupName="ProviderGroup"/>
-                            </Grid>
+                                    <RadioButton x:Name="RadioGemini" Grid.Column="0" Content="Gemini" Foreground="#E9D5FF" FontSize="13" 
+                                                 IsChecked="True" Checked="Provider_Changed" GroupName="ProviderGroup"/>
+                                    <RadioButton x:Name="RadioGroq" Grid.Column="1" Content="Groq" Foreground="#E9D5FF" FontSize="13" 
+                                                 Checked="Provider_Changed" GroupName="ProviderGroup"/>
+                                    <RadioButton x:Name="RadioOpenRouter" Grid.Column="2" Content="OpenRouter" Foreground="#E9D5FF" FontSize="13" 
+                                                 Checked="Provider_Changed" GroupName="ProviderGroup"/>
+                                </Grid>
 
-                            <TextBlock Text="Model Version:" Foreground="#C4B5FD" FontSize="12" Margin="0,4,0,6"/>
+                                <TextBlock Text="Model Version:" Foreground="#C4B5FD" FontSize="12" Margin="0,4,0,6"/>
 
-                            <!-- Fully Custom Dark Themed ComboBox -->
-                            <ComboBox x:Name="ModelCombo" FontSize="13" Foreground="#FFFFFF" Cursor="Hand">
-                                <ComboBox.Style>
-                                    <Style TargetType="ComboBox">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ComboBox">
-                                                    <Grid x:Name="MainGrid">
-                                                        <ToggleButton x:Name="ToggleButton" 
-                                                                      Focusable="False" 
-                                                                      IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
-                                                                      ClickMode="Press">
-                                                            <ToggleButton.Template>
-                                                                <ControlTemplate TargetType="ToggleButton">
-                                                                    <Border Background="#050508" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="10,8">
-                                                                        <Grid>
-                                                                            <Grid.ColumnDefinitions>
-                                                                                <ColumnDefinition Width="*"/>
-                                                                                <ColumnDefinition Width="Auto"/>
-                                                                            </Grid.ColumnDefinitions>
-                                                                            <TextBlock Grid.Column="1" Text="▾" Foreground="#C4B5FD" FontSize="12" VerticalAlignment="Center" Margin="6,0,0,0"/>
-                                                                        </Grid>
+                                <!-- Fully Custom Dark Themed ComboBox -->
+                                <ComboBox x:Name="ModelCombo" FontSize="13" Foreground="#FFFFFF" Cursor="Hand">
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ComboBox">
+                                                        <Grid x:Name="MainGrid">
+                                                            <ToggleButton x:Name="ToggleButton" 
+                                                                          Focusable="False" 
+                                                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                                                          ClickMode="Press">
+                                                                <ToggleButton.Template>
+                                                                    <ControlTemplate TargetType="ToggleButton">
+                                                                        <Border Background="#050508" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="10,8">
+                                                                            <Grid>
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="*"/>
+                                                                                    <ColumnDefinition Width="Auto"/>
+                                                                                </Grid.ColumnDefinitions>
+                                                                                <TextBlock Grid.Column="1" Text="▾" Foreground="#C4B5FD" FontSize="12" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                                                            </Grid>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </ToggleButton.Template>
+                                                            </ToggleButton>
+
+                                                            <ContentPresenter x:Name="ContentSite" 
+                                                                              IsHitTestVisible="False" 
+                                                                              Content="{TemplateBinding SelectionBoxItem}" 
+                                                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
+                                                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" 
+                                                                              Margin="12,6,30,6" 
+                                                                              VerticalAlignment="Center" 
+                                                                              HorizontalAlignment="Left">
+                                                                <ContentPresenter.Resources>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                                                        <Setter Property="FontSize" Value="13"/>
+                                                                        <Setter Property="FontWeight" Value="Medium"/>
+                                                                    </Style>
+                                                                </ContentPresenter.Resources>
+                                                            </ContentPresenter>
+
+                                                            <Popup x:Name="Popup" 
+                                                                   Placement="Bottom" 
+                                                                   IsOpen="{TemplateBinding IsDropDownOpen}" 
+                                                                   AllowsTransparency="True" 
+                                                                   Focusable="False" 
+                                                                   PopupAnimation="Slide">
+                                                                <Grid x:Name="DropDown" 
+                                                                      SnapsToDevicePixels="True" 
+                                                                      MinWidth="{TemplateBinding ActualWidth}" 
+                                                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                                                    <Border x:Name="DropDownBorder" 
+                                                                            Background="#08070D" 
+                                                                            BorderBrush="#3B1F5E" 
+                                                                            BorderThickness="1" 
+                                                                            CornerRadius="8" 
+                                                                            Margin="0,4,0,0">
+                                                                        <Border.Effect>
+                                                                            <DropShadowEffect BlurRadius="20" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.8"/>
+                                                                        </Border.Effect>
+                                                                        <ScrollViewer Margin="4" SnapsToDevicePixels="True">
+                                                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                                                        </ScrollViewer>
                                                                     </Border>
-                                                                </ControlTemplate>
-                                                            </ToggleButton.Template>
-                                                        </ToggleButton>
+                                                                </Grid>
+                                                            </Popup>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ComboBox.Style>
 
-                                                        <ContentPresenter x:Name="ContentSite" 
-                                                                          IsHitTestVisible="False" 
-                                                                          Content="{TemplateBinding SelectionBoxItem}" 
-                                                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
-                                                                          ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" 
-                                                                          Margin="12,6,30,6" 
-                                                                          VerticalAlignment="Center" 
-                                                                          HorizontalAlignment="Left">
-                                                            <ContentPresenter.Resources>
-                                                                <Style TargetType="TextBlock">
-                                                                    <Setter Property="Foreground" Value="#FFFFFF"/>
-                                                                    <Setter Property="FontSize" Value="13"/>
-                                                                    <Setter Property="FontWeight" Value="Medium"/>
-                                                                </Style>
-                                                            </ContentPresenter.Resources>
-                                                        </ContentPresenter>
+                                    <ComboBox.ItemContainerStyle>
+                                        <Style TargetType="ComboBoxItem">
+                                            <Setter Property="Background" Value="#08070D"/>
+                                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                                            <Setter Property="Padding" Value="10,8"/>
+                                            <Setter Property="BorderThickness" Value="0"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ComboBoxItem">
+                                                        <Border x:Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}" Margin="0,1">
+                                                            <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="ItemBorder" Property="Background" Value="#251245"/>
+                                                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsSelected" Value="True">
+                                                                <Setter TargetName="ItemBorder" Property="Background" Value="#9333EA"/>
+                                                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ComboBox.ItemContainerStyle>
+                                </ComboBox>
+                            </StackPanel>
+                        </Border>
 
-                                                        <Popup x:Name="Popup" 
-                                                               Placement="Bottom" 
-                                                               IsOpen="{TemplateBinding IsDropDownOpen}" 
-                                                               AllowsTransparency="True" 
-                                                               Focusable="False" 
-                                                               PopupAnimation="Slide">
-                                                            <Grid x:Name="DropDown" 
-                                                                  SnapsToDevicePixels="True" 
-                                                                  MinWidth="{TemplateBinding ActualWidth}" 
-                                                                  MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                                                <Border x:Name="DropDownBorder" 
-                                                                        Background="#08070D" 
-                                                                        BorderBrush="#3B1F5E" 
-                                                                        BorderThickness="1" 
-                                                                        CornerRadius="8" 
-                                                                        Margin="0,4,0,0">
-                                                                    <Border.Effect>
-                                                                        <DropShadowEffect BlurRadius="20" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.8"/>
-                                                                    </Border.Effect>
-                                                                    <ScrollViewer Margin="4" SnapsToDevicePixels="True">
-                                                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
-                                                                    </ScrollViewer>
-                                                                </Border>
-                                                            </Grid>
-                                                        </Popup>
-                                                    </Grid>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </ComboBox.Style>
+                        <!-- Card 2: API Keys -->
+                        <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14">
+                            <StackPanel>
+                                <TextBlock Text="API KEYS" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                                <ComboBox.ItemContainerStyle>
-                                    <Style TargetType="ComboBoxItem">
-                                        <Setter Property="Background" Value="#08070D"/>
-                                        <Setter Property="Foreground" Value="#FFFFFF"/>
-                                        <Setter Property="Padding" Value="10,8"/>
-                                        <Setter Property="BorderThickness" Value="0"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ComboBoxItem">
-                                                    <Border x:Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}" Margin="0,1">
-                                                        <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}"/>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="ItemBorder" Property="Background" Value="#251245"/>
-                                                            <Setter Property="Foreground" Value="#FFFFFF"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsSelected" Value="True">
-                                                            <Setter TargetName="ItemBorder" Property="Background" Value="#9333EA"/>
-                                                            <Setter Property="Foreground" Value="#FFFFFF"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </ComboBox.ItemContainerStyle>
-                            </ComboBox>
-                        </StackPanel>
-                    </Border>
+                                <!-- Gemini API Key -->
+                                <TextBlock Text="Google Gemini API Key:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <PasswordBox x:Name="GeminiKeyPass" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                                 BorderThickness="1,1,0,1" Padding="8,6" FontSize="12"/>
+                                    <TextBox x:Name="GeminiKeyText" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                             BorderThickness="1,1,0,1" Padding="8,6" FontSize="12" Visibility="Collapsed"/>
+                                    <Border Grid.Column="1" MouseLeftButtonDown="ToggleGeminiEye_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="0,1,1,1"
+                                            CornerRadius="0,6,6,0" Padding="10,6" VerticalAlignment="Stretch">
+                                        <TextBlock x:Name="GeminiEye" Text="👁️" FontSize="11" VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
 
-                    <!-- Card 2: API Keys (Hidden with PasswordBox & Show/Hide Eye Toggle) -->
-                    <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
-                        <StackPanel>
-                            <TextBlock Text="API KEYS" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <!-- Groq API Key -->
+                                <TextBlock Text="Groq API Key:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <PasswordBox x:Name="GroqKeyPass" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                                 BorderThickness="1,1,0,1" Padding="8,6" FontSize="12"/>
+                                    <TextBox x:Name="GroqKeyText" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                             BorderThickness="1,1,0,1" Padding="8,6" FontSize="12" Visibility="Collapsed"/>
+                                    <Border Grid.Column="1" MouseLeftButtonDown="ToggleGroqEye_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="0,1,1,1"
+                                            CornerRadius="0,6,6,0" Padding="10,6" VerticalAlignment="Stretch">
+                                        <TextBlock x:Name="GroqEye" Text="👁️" FontSize="11" VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
 
-                            <!-- Gemini API Key -->
-                            <TextBlock Text="Google Gemini API Key:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <PasswordBox x:Name="GeminiKeyPass" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                             BorderThickness="1,1,0,1" Padding="8,6" FontSize="12"/>
-                                <TextBox x:Name="GeminiKeyText" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                         BorderThickness="1,1,0,1" Padding="8,6" FontSize="12" Visibility="Collapsed"/>
-                                <Border Grid.Column="1" MouseLeftButtonDown="ToggleGeminiEye_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="0,1,1,1"
-                                        CornerRadius="0,6,6,0" Padding="10,6" VerticalAlignment="Stretch">
-                                    <TextBlock x:Name="GeminiEye" Text="👁️" FontSize="11" VerticalAlignment="Center"/>
-                                </Border>
-                            </Grid>
+                                <!-- OpenRouter API Key -->
+                                <TextBlock Text="OpenRouter API Key:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
+                                <Grid Margin="0,0,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <PasswordBox x:Name="OpenRouterKeyPass" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                                 BorderThickness="1,1,0,1" Padding="8,6" FontSize="12"/>
+                                    <TextBox x:Name="OpenRouterKeyText" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                             BorderThickness="1,1,0,1" Padding="8,6" FontSize="12" Visibility="Collapsed"/>
+                                    <Border Grid.Column="1" MouseLeftButtonDown="ToggleOpenRouterEye_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="0,1,1,1"
+                                            CornerRadius="0,6,6,0" Padding="10,6" VerticalAlignment="Stretch">
+                                        <TextBlock x:Name="OpenRouterEye" Text="👁️" FontSize="11" VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
-                            <!-- Groq API Key -->
-                            <TextBlock Text="Groq API Key:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <PasswordBox x:Name="GroqKeyPass" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                             BorderThickness="1,1,0,1" Padding="8,6" FontSize="12"/>
-                                <TextBox x:Name="GroqKeyText" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                         BorderThickness="1,1,0,1" Padding="8,6" FontSize="12" Visibility="Collapsed"/>
-                                <Border Grid.Column="1" MouseLeftButtonDown="ToggleGroqEye_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="0,1,1,1"
-                                        CornerRadius="0,6,6,0" Padding="10,6" VerticalAlignment="Stretch">
-                                    <TextBlock x:Name="GroqEye" Text="👁️" FontSize="11" VerticalAlignment="Center"/>
-                                </Border>
-                            </Grid>
+                    <!-- TAB 2: PROMPTS & ACTIONS -->
+                    <StackPanel x:Name="TabPanel_Prompts" Visibility="Collapsed">
+                        <!-- Card 3: Custom System Prompt -->
+                        <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock Text="CUSTOM SYSTEM PROMPT" Foreground="#C084FC" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetPrompt_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" Padding="8,3">
+                                        <TextBlock Text="Reset Default" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
+                                    </Border>
+                                </Grid>
 
-                            <!-- OpenRouter API Key -->
-                            <TextBlock Text="OpenRouter API Key:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
-                            <Grid Margin="0,0,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <PasswordBox x:Name="OpenRouterKeyPass" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                             BorderThickness="1,1,0,1" Padding="8,6" FontSize="12"/>
-                                <TextBox x:Name="OpenRouterKeyText" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                         BorderThickness="1,1,0,1" Padding="8,6" FontSize="12" Visibility="Collapsed"/>
-                                <Border Grid.Column="1" MouseLeftButtonDown="ToggleOpenRouterEye_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="0,1,1,1"
-                                        CornerRadius="0,6,6,0" Padding="10,6" VerticalAlignment="Stretch">
-                                    <TextBlock x:Name="OpenRouterEye" Text="👁️" FontSize="11" VerticalAlignment="Center"/>
-                                </Border>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
+                                <TextBlock Text="Template instruction sent before screen OCR / text input:" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,6"/>
 
-                    <!-- Card 3: Custom System Prompt -->
-                    <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
-                        <StackPanel>
-                            <Grid Margin="0,0,0,6">
-                                <TextBlock Text="CUSTOM SYSTEM PROMPT" Foreground="#C084FC" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                                <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetPrompt_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" Padding="8,3">
-                                    <TextBlock Text="Reset Default" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
-                                </Border>
-                            </Grid>
-
-                            <TextBlock Text="Template instruction sent before screen OCR / text input:" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,6"/>
-
-                            <Border Background="#050508" CornerRadius="8" BorderBrush="#3B1F5E" BorderThickness="1" Padding="8">
-                                <TextBox x:Name="SystemPromptBox" AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="140" MinHeight="80" 
-                                         Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" 
-                                         FontSize="12" FontFamily="Segoe UI" VerticalScrollBarVisibility="Auto"
-                                         SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
-                            </Border>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Card 4: Custom Quick Action Tags (Follow-up Buttons) -->
-                    <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
-                        <StackPanel>
-                            <Grid Margin="0,0,0,6">
-                                <TextBlock Text="QUICK ACTION TAGS (FOLLOW-UP BUTTONS)" Foreground="#C084FC" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                                <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetDefaultTags_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" Padding="8,3">
-                                    <TextBlock Text="Reset Defaults" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
-                                </Border>
-                            </Grid>
-
-                            <TextBlock Text="Configure custom follow-up shortcut tags shown in the Answer window:" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8"/>
-
-                            <!-- Table Header -->
-                            <Grid Margin="0,0,0,6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="130"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="85"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Button Label" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="1" Text="AI Prompt / Message Sent" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold" Margin="8,0,0,0"/>
-                                <TextBlock Grid.Column="2" Text="Order / Actions" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"/>
-                            </Grid>
-
-                            <!-- Dynamic List of Custom Tags -->
-                            <StackPanel x:Name="QuickActionsListPanel" Margin="0,0,0,8"/>
-
-                            <!-- Add Tag Button -->
-                            <Border MouseLeftButtonDown="AddTag_Click" Cursor="Hand" Background="#050508" BorderBrush="#9333EA" BorderThickness="1" CornerRadius="8" Padding="10,6" HorizontalAlignment="Left">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="+ " Foreground="#E9D5FF" FontSize="12" FontWeight="Bold"/>
-                                    <TextBlock Text="Add New Tag" Foreground="#E9D5FF" FontSize="12" FontWeight="SemiBold"/>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Card 5: Window Size (Dimensions) -->
-                    <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
-                        <StackPanel>
-                            <Grid Margin="0,0,0,6">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="WINDOW SIZE (DIMENSIONS)" Foreground="#C084FC" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    <TextBlock Text=" • Live Preview ✨" Foreground="#E9D5FF" FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center" Margin="6,0,0,0"/>
-                                </StackPanel>
-                                <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetDefaultSize_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" Padding="8,3">
-                                    <TextBlock Text="Reset Default" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
-                                </Border>
-                            </Grid>
-
-                            <TextBlock Text="Click a preset or enter dimensions in pixels (applies immediately to the open popup):" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8"/>
-
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="16"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Width Box -->
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Width (px):" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
-                                    <TextBox x:Name="WindowWidthBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                             BorderThickness="1" Padding="8,6" FontSize="12" Text="680" TextChanged="DimensionBox_TextChanged"
+                                <Border Background="#050508" CornerRadius="8" BorderBrush="#3B1F5E" BorderThickness="1" Padding="8">
+                                    <TextBox x:Name="SystemPromptBox" AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="140" MinHeight="80" 
+                                             Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" 
+                                             FontSize="12" FontFamily="Segoe UI" VerticalScrollBarVisibility="Auto"
                                              SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
-                                </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
 
-                                <!-- Height Box -->
-                                <StackPanel Grid.Column="2">
-                                    <TextBlock Text="Height (px):" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
-                                    <TextBox x:Name="WindowHeightBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                             BorderThickness="1" Padding="8,6" FontSize="12" Text="580" TextChanged="DimensionBox_TextChanged"
+                        <!-- Card 4: Custom Quick Action Tags -->
+                        <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock Text="QUICK ACTION TAGS (FOLLOW-UP BUTTONS)" Foreground="#C084FC" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetDefaultTags_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" Padding="8,3">
+                                        <TextBlock Text="Reset Defaults" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
+                                    </Border>
+                                </Grid>
+
+                                <TextBlock Text="Configure custom follow-up shortcut tags shown in the Answer window:" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8"/>
+
+                                <!-- Table Header -->
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="85"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Button Label" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" Text="AI Prompt / Message Sent" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold" Margin="8,0,0,0"/>
+                                    <TextBlock Grid.Column="2" Text="Order / Actions" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <!-- Dynamic List of Custom Tags -->
+                                <StackPanel x:Name="QuickActionsListPanel" Margin="0,0,0,8"/>
+
+                                <!-- Add Tag Button -->
+                                <Border MouseLeftButtonDown="AddTag_Click" Cursor="Hand" Background="#050508" BorderBrush="#9333EA" BorderThickness="1" CornerRadius="8" Padding="10,6" HorizontalAlignment="Left">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="+ " Foreground="#E9D5FF" FontSize="12" FontWeight="Bold"/>
+                                        <TextBlock Text="Add New Tag" Foreground="#E9D5FF" FontSize="12" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- TAB 3: WINDOW & DISPLAY -->
+                    <StackPanel x:Name="TabPanel_Window" Visibility="Collapsed">
+                        <!-- Card 5: Window Size -->
+                        <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,6">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="WINDOW SIZE (DIMENSIONS)" Foreground="#C084FC" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                                        <TextBlock Text=" • Live Preview ✨" Foreground="#E9D5FF" FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    </StackPanel>
+                                    <Border HorizontalAlignment="Right" MouseLeftButtonDown="ResetDefaultSize_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" Padding="8,3">
+                                        <TextBlock Text="Reset Default" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
+                                    </Border>
+                                </Grid>
+
+                                <TextBlock Text="Click a preset or enter dimensions in pixels (applies immediately to the open popup):" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8"/>
+
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Width Box -->
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Width (px):" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
+                                        <TextBox x:Name="WindowWidthBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                                 BorderThickness="1" Padding="8,6" FontSize="12" Text="680" TextChanged="DimensionBox_TextChanged"
+                                                 SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
+                                    </StackPanel>
+
+                                    <!-- Height Box -->
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Height (px):" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
+                                        <TextBox x:Name="WindowHeightBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                                 BorderThickness="1" Padding="8,6" FontSize="12" Text="580" TextChanged="DimensionBox_TextChanged"
+                                                 SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Quick Size Presets -->
+                                <WrapPanel Orientation="Horizontal">
+                                    <TextBlock Text="Presets:" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,4"/>
+                                    
+                                    <Border x:Name="PillCompact" MouseLeftButtonDown="PresetSize_Compact" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
+                                        <TextBlock x:Name="TextCompact" Text="Compact (560x480)" Foreground="#D8B4FE" FontSize="11"/>
+                                    </Border>
+                                    <Border x:Name="PillStandard" MouseLeftButtonDown="PresetSize_Standard" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
+                                        <TextBlock x:Name="TextStandard" Text="Standard (680x580)" Foreground="#D8B4FE" FontSize="11"/>
+                                    </Border>
+                                    <Border x:Name="PillWide" MouseLeftButtonDown="PresetSize_Wide" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
+                                        <TextBlock x:Name="TextWide" Text="Wide (820x600)" Foreground="#D8B4FE" FontSize="11"/>
+                                    </Border>
+                                    <Border x:Name="PillLarge" MouseLeftButtonDown="PresetSize_Large" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
+                                        <TextBlock x:Name="TextLarge" Text="Large (960x720)" Foreground="#D8B4FE" FontSize="11"/>
+                                    </Border>
+                                    <Border x:Name="PillFullScreen" MouseLeftButtonDown="PresetSize_FullScreen" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,0,4">
+                                        <TextBlock x:Name="TextFullScreen" Text="Full Screen (⛶)" Foreground="#D8B4FE" FontSize="11"/>
+                                    </Border>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 6: Auto-Close Timer -->
+                        <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="AUTO-CLOSE TIMER" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
+                                <TextBlock Text="Seconds before answer window automatically dismisses (enter 0 to keep window open):" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8"/>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="AutoCloseBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                             BorderThickness="1" Padding="8,6" FontSize="12" Text="25"
                                              SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
-                                </StackPanel>
-                            </Grid>
+                                    <TextBlock Grid.Column="1" Text="seconds" Foreground="#C4B5FD" FontSize="12" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
 
-                            <!-- Quick Size Presets -->
-                            <WrapPanel Orientation="Horizontal">
-                                <TextBlock Text="Presets:" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,4"/>
-                                
-                                <Border x:Name="PillCompact" MouseLeftButtonDown="PresetSize_Compact" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
-                                    <TextBlock x:Name="TextCompact" Text="Compact (560x480)" Foreground="#D8B4FE" FontSize="11"/>
-                                </Border>
-                                <Border x:Name="PillStandard" MouseLeftButtonDown="PresetSize_Standard" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
-                                    <TextBlock x:Name="TextStandard" Text="Standard (680x580)" Foreground="#D8B4FE" FontSize="11"/>
-                                </Border>
-                                <Border x:Name="PillWide" MouseLeftButtonDown="PresetSize_Wide" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
-                                    <TextBlock x:Name="TextWide" Text="Wide (820x600)" Foreground="#D8B4FE" FontSize="11"/>
-                                </Border>
-                                <Border x:Name="PillLarge" MouseLeftButtonDown="PresetSize_Large" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,5,4">
-                                    <TextBlock x:Name="TextLarge" Text="Large (960x720)" Foreground="#D8B4FE" FontSize="11"/>
-                                </Border>
-                                <Border x:Name="PillFullScreen" MouseLeftButtonDown="PresetSize_FullScreen" Cursor="Hand" Background="#120924" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="7,3" Margin="0,0,0,4">
-                                    <TextBlock x:Name="TextFullScreen" Text="Full Screen (⛶)" Foreground="#D8B4FE" FontSize="11"/>
-                                </Border>
-                            </WrapPanel>
-                        </StackPanel>
-                    </Border>
+                        <!-- Card 8: Window Behavior & Overlay -->
+                        <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14">
+                            <StackPanel>
+                                <TextBlock Text="WINDOW OVERLAY &amp; BEHAVIOR" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
+                                <CheckBox x:Name="AlwaysOnTopCheckBox" Content="Keep window always on top (overlay other apps &amp; tabs)" 
+                                          Foreground="#E9D5FF" FontSize="12" VerticalContentAlignment="Center" Cursor="Hand"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
-                    <!-- Card 6: Auto-Close Timer -->
-                    <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
-                        <StackPanel>
-                            <TextBlock Text="AUTO-CLOSE TIMER" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
-                            <TextBlock Text="Seconds before answer window automatically dismisses (enter 0 to keep window open):" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8"/>
+                    <!-- TAB 4: GOOGLE EXPORT -->
+                    <StackPanel x:Name="TabPanel_Google" Visibility="Collapsed">
+                        <!-- Card 7: Google Drive & Docs Export Settings -->
+                        <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14">
+                            <StackPanel>
+                                <TextBlock Text="GOOGLE DRIVE &amp; DOCS EXPORT" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
+                                <TextBlock Text="Configure Google links &amp; folder ID to automatically save Q&amp;A summaries:" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8"/>
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBox x:Name="AutoCloseBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                         BorderThickness="1" Padding="8,6" FontSize="12" Text="25"
+                                <TextBlock Text="Google Drive Folder ID or Folder Link:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
+                                <TextBox x:Name="GoogleFolderBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                         BorderThickness="1" Padding="8,6" FontSize="12" Margin="0,0,0,10"
                                          SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
-                                <TextBlock Grid.Column="1" Text="seconds" Foreground="#C4B5FD" FontSize="12" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
 
-                    <!-- Card 7: Window Behavior & Overlay -->
-                    <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14">
-                        <StackPanel>
-                            <TextBlock Text="WINDOW OVERLAY &amp; BEHAVIOR" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
-                            <CheckBox x:Name="AlwaysOnTopCheckBox" Content="Keep window always on top (overlay other apps &amp; tabs)" 
-                                      Foreground="#E9D5FF" FontSize="12" VerticalContentAlignment="Center" Cursor="Hand"/>
-                        </StackPanel>
-                    </Border>
+                                <TextBlock Text="Custom Google Docs / Target Link:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
+                                <TextBox x:Name="GoogleDocsLinkBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
+                                         BorderThickness="1" Padding="8,6" FontSize="12" Margin="0,0,0,10"
+                                         SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
+
+                                <TextBlock Text="Google Service Account Credentials (JSON String):" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
+                                <Border Background="#050508" CornerRadius="8" BorderBrush="#3B1F5E" BorderThickness="1" Padding="8">
+                                    <TextBox x:Name="GoogleCredentialsBox" AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="120" MinHeight="60" 
+                                             Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" 
+                                             FontSize="11" FontFamily="Consolas, Segoe UI" VerticalScrollBarVisibility="Auto"
+                                             SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
+                                </Border>
+                                <TextBlock Text="* If credentials are provided, Q&amp;A will automatically create a Google Doc in your Drive folder. Otherwise, it copies Q&amp;A text to clipboard and opens the Google link." Foreground="#A78BFA" FontSize="10" Margin="0,6,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
                 </StackPanel>
             </ScrollViewer>
 
             <!-- 3. Footer Actions -->
-            <Border Grid.Row="2" Background="#040407" CornerRadius="0,0,15,15" Padding="16,10,16,14">
+            <Border Grid.Row="3" Background="#040407" CornerRadius="0,0,15,15" Padding="16,10,16,14">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Border MouseLeftButtonDown="Cancel_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="8" Padding="14,6" Margin="0,0,10,0">
                         <TextBlock Text="Cancel" Foreground="#E9D5FF" FontSize="12" FontWeight="Medium"/>
