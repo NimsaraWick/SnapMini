@@ -309,6 +309,12 @@ namespace SnapMini.Views
                 TogglePauseTimer();
                 e.Handled = true;
             }
+            // Ctrl+D to Save to Google Docs
+            else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && e.Key == Key.D)
+            {
+                SaveToDocs_Click(this, null);
+                e.Handled = true;
+            }
             // Full Screen toggle shortcut: F11 or F
             else if (e.Key == Key.F11 || e.Key == Key.F)
             {
@@ -647,7 +653,7 @@ namespace SnapMini.Views
             }
         }
 
-        private async void SaveToDocs_Click(object sender, MouseButtonEventArgs e)
+        private async void SaveToDocs_Click(object sender, MouseButtonEventArgs? e)
         {
             try
             {
@@ -661,6 +667,12 @@ namespace SnapMini.Views
 
                 string target = await GoogleDocsService.ExportQaSummaryAsync(questionText, answerText);
 
+                if (!string.IsNullOrWhiteSpace(target) && target.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    try { Clipboard.SetText(target); } catch { }
+                    SaveDocBtn.ToolTip = $"Saved to Google Docs!\nLink copied to clipboard:\n{target}";
+                }
+
                 SaveDocBtnText.Text = "Saved!";
                 SaveDocIcon.Text = "✓ ";
 
@@ -670,6 +682,7 @@ namespace SnapMini.Views
                     resetTimer.Stop();
                     SaveDocBtnText.Text = "Save to Docs";
                     SaveDocIcon.Text = "📄 ";
+                    SaveDocBtn.ToolTip = "Save Q&A to Google Docs / Drive (Ctrl+D)";
                 };
                 resetTimer.Start();
             }

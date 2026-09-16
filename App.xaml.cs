@@ -17,9 +17,25 @@ namespace SnapMini
         private NotifyIcon? _trayIcon;
         private HotkeyManager? _hotkeyManager;
         private Window? _hiddenWindow;
+        private static System.Threading.Mutex? _mutex;
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            const string mutexName = "SnapMini_SingleInstance_App_Mutex";
+            _mutex = new System.Threading.Mutex(true, mutexName, out bool isNewInstance);
+
+            if (!isNewInstance)
+            {
+                System.Windows.MessageBox.Show(
+                    "SnapMini is already running in your System Tray.\n\nLook for the SnapMini icon near your Windows clock (bottom-right), or use your hotkeys:\n• Ctrl+Shift+A / Ctrl+Alt+A: Selected Text\n• Ctrl+Shift+S / Ctrl+Alt+S: Screenshot OCR",
+                    "SnapMini Already Running",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                Shutdown();
+                return;
+            }
+
             base.OnStartup(e);
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -46,7 +62,7 @@ namespace SnapMini
             {
                 Icon = trayIconImage,
                 Visible = true,
-                Text = "SnapMini (AI Assistant)\n• Ctrl+Alt+A: Selected Text\n• Ctrl+Alt+S: Screenshot"
+                Text = "SnapMini (AI Assistant)\n• Ctrl+Shift+A / Ctrl+Alt+A: Selected Text\n• Ctrl+Shift+S / Ctrl+Alt+S: Screenshot"
             };
 
             var contextMenu = new ContextMenuStrip();
@@ -79,6 +95,13 @@ namespace SnapMini
             _hotkeyManager?.Dispose();
             _trayIcon?.Dispose();
             _hiddenWindow?.Close();
+
+            try
+            {
+                _mutex?.ReleaseMutex();
+                _mutex?.Dispose();
+            }
+            catch { }
 
             base.OnExit(e);
         }

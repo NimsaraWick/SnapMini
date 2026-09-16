@@ -38,11 +38,14 @@ namespace SnapMini.Helpers
 
         public const uint MOD_ALT = 0x0001;
         public const uint MOD_CONTROL = 0x0002;
+        public const uint MOD_SHIFT = 0x0004;
 
         private const int WM_HOTKEY = 0x0312;
 
-        private const int HOTKEY_TEXT_ID = 9001;
-        private const int HOTKEY_SCREENSHOT_ID = 9002;
+        private const int HOTKEY_TEXT_ALT_ID = 9001;
+        private const int HOTKEY_SCREENSHOT_ALT_ID = 9002;
+        private const int HOTKEY_TEXT_SHIFT_ID = 9003;
+        private const int HOTKEY_SCREENSHOT_SHIFT_ID = 9004;
 
         private const uint VK_A = 0x41;
         private const uint VK_S = 0x53;
@@ -58,14 +61,40 @@ namespace SnapMini.Helpers
             _hwndSource = HwndSource.FromHwnd(_windowHandle);
             _hwndSource?.AddHook(HwndHook);
 
-            bool textHotkeySuccess = RegisterHotKey(_windowHandle, HOTKEY_TEXT_ID, MOD_CONTROL | MOD_ALT, VK_A);
-            bool screenshotHotkeySuccess = RegisterHotKey(_windowHandle, HOTKEY_SCREENSHOT_ID, MOD_CONTROL | MOD_ALT, VK_S);
+            bool textAltSuccess = RegisterHotKey(_windowHandle, HOTKEY_TEXT_ALT_ID, MOD_CONTROL | MOD_ALT, VK_A);
+            bool textShiftSuccess = RegisterHotKey(_windowHandle, HOTKEY_TEXT_SHIFT_ID, MOD_CONTROL | MOD_SHIFT, VK_A);
 
-            if (!textHotkeySuccess || !screenshotHotkeySuccess)
+            bool ssAltSuccess = RegisterHotKey(_windowHandle, HOTKEY_SCREENSHOT_ALT_ID, MOD_CONTROL | MOD_ALT, VK_S);
+            bool ssShiftSuccess = RegisterHotKey(_windowHandle, HOTKEY_SCREENSHOT_SHIFT_ID, MOD_CONTROL | MOD_SHIFT, VK_S);
+
+            var failedText = new System.Collections.Generic.List<string>();
+            if (!textAltSuccess) failedText.Add("Ctrl+Alt+A");
+            if (!textShiftSuccess) failedText.Add("Ctrl+Shift+A");
+
+            if (!textAltSuccess && !textShiftSuccess)
             {
                 System.Windows.MessageBox.Show(
-                    "Warning: Could not register hotkeys (Ctrl+Alt+A / Ctrl+Alt+S). Another app may be using them.",
+                    "Warning: Could not register text hotkeys (Ctrl+Shift+A / Ctrl+Alt+A). Another app (e.g. QQ, WeChat, PowerToys, Snagit) is using them.",
                     "SnapMini");
+            }
+            else if (failedText.Count > 0)
+            {
+                Debug.WriteLine($"SnapMini: Failed to register hotkey(s): {string.Join(", ", failedText)}. (Another app may be using them)");
+            }
+
+            var failedSs = new System.Collections.Generic.List<string>();
+            if (!ssAltSuccess) failedSs.Add("Ctrl+Alt+S");
+            if (!ssShiftSuccess) failedSs.Add("Ctrl+Shift+S");
+
+            if (!ssAltSuccess && !ssShiftSuccess)
+            {
+                System.Windows.MessageBox.Show(
+                    "Warning: Could not register screenshot hotkeys (Ctrl+Shift+S / Ctrl+Alt+S). Another app is using them.",
+                    "SnapMini");
+            }
+            else if (failedSs.Count > 0)
+            {
+                Debug.WriteLine($"SnapMini: Failed to register screenshot hotkey(s): {string.Join(", ", failedSs)}.");
             }
         }
 
@@ -75,12 +104,12 @@ namespace SnapMini.Helpers
             {
                 int hotkeyId = wParam.ToInt32();
 
-                if (hotkeyId == HOTKEY_TEXT_ID)
+                if (hotkeyId == HOTKEY_TEXT_ALT_ID || hotkeyId == HOTKEY_TEXT_SHIFT_ID)
                 {
                     _ = HandleSelectedTextHotkeyAsync();
                     handled = true;
                 }
-                else if (hotkeyId == HOTKEY_SCREENSHOT_ID)
+                else if (hotkeyId == HOTKEY_SCREENSHOT_ALT_ID || hotkeyId == HOTKEY_SCREENSHOT_SHIFT_ID)
                 {
                     _ = HandleScreenshotHotkeyAsync();
                     handled = true;
@@ -121,7 +150,7 @@ namespace SnapMini.Helpers
                 if (string.IsNullOrWhiteSpace(selectedText))
                 {
                     System.Windows.MessageBox.Show(
-                        "No highlighted text detected. Highlight text and try pressing Ctrl+Alt+A (or press Ctrl+C first).",
+                        "No highlighted text detected. Highlight text and try pressing Ctrl+Shift+A or Ctrl+Alt+A (or press Ctrl+C first).",
                         "SnapMini");
                     return;
                 }
@@ -244,6 +273,8 @@ namespace SnapMini.Helpers
 
         private static void SimulateCleanCopy()
         {
+            keybd_event((byte)VK_A, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+            keybd_event((byte)VK_S, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
             keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
             keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
             keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
@@ -258,8 +289,10 @@ namespace SnapMini.Helpers
         {
             if (_windowHandle != IntPtr.Zero)
             {
-                UnregisterHotKey(_windowHandle, HOTKEY_TEXT_ID);
-                UnregisterHotKey(_windowHandle, HOTKEY_SCREENSHOT_ID);
+                UnregisterHotKey(_windowHandle, HOTKEY_TEXT_ALT_ID);
+                UnregisterHotKey(_windowHandle, HOTKEY_TEXT_SHIFT_ID);
+                UnregisterHotKey(_windowHandle, HOTKEY_SCREENSHOT_ALT_ID);
+                UnregisterHotKey(_windowHandle, HOTKEY_SCREENSHOT_SHIFT_ID);
             }
             _hwndSource?.RemoveHook(HwndHook);
         }

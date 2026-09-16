@@ -152,7 +152,7 @@
                         <!-- Save to Google Docs Button -->
                         <Border x:Name="SaveDocBtn" MouseLeftButtonDown="SaveToDocs_Click" Cursor="Hand" 
                                 Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" 
-                                Padding="8,3" Margin="0,0,6,0" VerticalAlignment="Center" ToolTip="Save Q&amp;A to Google Docs / Drive">
+                                Padding="8,3" Margin="0,0,6,0" VerticalAlignment="Center" ToolTip="Save Q&amp;A to Google Docs / Drive (Ctrl+D)">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="SaveDocIcon" Text="📄 " Foreground="#E9D5FF" FontSize="11"/>
                                 <TextBlock x:Name="SaveDocBtnText" Text="Save to Docs" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
