@@ -107,6 +107,14 @@ namespace SnapMini.Services
             public string Prompt { get; set; } = "";
         }
 
+        public class GoogleExportTarget
+        {
+            public string Id { get; set; } = Guid.NewGuid().ToString();
+            public string Name { get; set; } = "";
+            public string Type { get; set; } = "Doc"; // "Doc" or "Folder"
+            public string UrlOrId { get; set; } = "";
+        }
+
         public static System.Collections.Generic.List<QuickActionTag> GetDefaultQuickActions() => new()
         {
             new QuickActionTag { Label = "💡 Simpler", Prompt = "Could you explain this in simpler terms with a clear summary?" },
@@ -134,6 +142,8 @@ namespace SnapMini.Services
             public string GoogleCredentialsJson { get; set; } = "";
             public bool EnableGoogleExport { get; set; } = true;
             public System.Collections.Generic.List<QuickActionTag> QuickActions { get; set; } = GetDefaultQuickActions();
+            public System.Collections.Generic.List<GoogleExportTarget> GoogleExportTargets { get; set; } = new();
+            public string LastSelectedGoogleTargetId { get; set; } = "";
         }
 
         public static AISettings ReadSettings()
@@ -167,6 +177,7 @@ namespace SnapMini.Services
                     if (root.TryGetProperty("GoogleDocsCustomLink", out var gdl)) settings.GoogleDocsCustomLink = gdl.GetString() ?? "";
                     if (root.TryGetProperty("GoogleCredentialsJson", out var gcj)) settings.GoogleCredentialsJson = gcj.GetString() ?? "";
                     if (root.TryGetProperty("EnableGoogleExport", out var ege)) settings.EnableGoogleExport = ege.GetBoolean();
+                    if (root.TryGetProperty("LastSelectedGoogleTargetId", out var lsgt)) settings.LastSelectedGoogleTargetId = lsgt.GetString() ?? "";
 
                     if (root.TryGetProperty("QuickActions", out var qaArray) && qaArray.ValueKind == JsonValueKind.Array)
                     {
@@ -183,6 +194,58 @@ namespace SnapMini.Services
                         if (list.Count > 0)
                         {
                             settings.QuickActions = list;
+                        }
+                    }
+
+                    if (root.TryGetProperty("GoogleExportTargets", out var targetsArray) && targetsArray.ValueKind == JsonValueKind.Array)
+                    {
+                        var targetsList = new System.Collections.Generic.List<GoogleExportTarget>();
+                        foreach (var elem in targetsArray.EnumerateArray())
+                        {
+                            string id = elem.TryGetProperty("Id", out var idProp) ? idProp.GetString() ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
+                            string name = elem.TryGetProperty("Name", out var nameProp) ? nameProp.GetString() ?? "" : "";
+                            string type = elem.TryGetProperty("Type", out var typeProp) ? typeProp.GetString() ?? "Doc" : "Doc";
+                            string urlOrId = elem.TryGetProperty("UrlOrId", out var urlProp) ? urlProp.GetString() ?? "" : "";
+
+                            if (!string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(urlOrId))
+                            {
+                                targetsList.Add(new GoogleExportTarget
+                                {
+                                    Id = string.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString() : id,
+                                    Name = name,
+                                    Type = type,
+                                    UrlOrId = urlOrId
+                                });
+                            }
+                        }
+                        if (targetsList.Count > 0)
+                        {
+                            settings.GoogleExportTargets = targetsList;
+                        }
+                    }
+
+                    // Backward compatibility: If no targets are defined but legacy settings exist, populate them
+                    if (settings.GoogleExportTargets.Count == 0)
+                    {
+                        if (!string.IsNullOrWhiteSpace(settings.GoogleDocsCustomLink))
+                        {
+                            settings.GoogleExportTargets.Add(new GoogleExportTarget
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Name = "Default Google Doc",
+                                Type = "Doc",
+                                UrlOrId = settings.GoogleDocsCustomLink
+                            });
+                        }
+                        if (!string.IsNullOrWhiteSpace(settings.GoogleDriveFolderId))
+                        {
+                            settings.GoogleExportTargets.Add(new GoogleExportTarget
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Name = "Default Drive Folder",
+                                Type = "Folder",
+                                UrlOrId = settings.GoogleDriveFolderId
+                            });
                         }
                     }
 
@@ -218,7 +281,9 @@ namespace SnapMini.Services
                     GoogleDocsCustomLink = settings.GoogleDocsCustomLink ?? "",
                     GoogleCredentialsJson = settings.GoogleCredentialsJson ?? "",
                     EnableGoogleExport = settings.EnableGoogleExport,
-                    QuickActions = settings.QuickActions ?? GetDefaultQuickActions()
+                    QuickActions = settings.QuickActions ?? GetDefaultQuickActions(),
+                    GoogleExportTargets = settings.GoogleExportTargets ?? new System.Collections.Generic.List<GoogleExportTarget>(),
+                    LastSelectedGoogleTargetId = settings.LastSelectedGoogleTargetId ?? ""
                 };
 
                 string json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });

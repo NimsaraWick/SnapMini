@@ -12,6 +12,111 @@
         TextOptions.TextRenderingMode="ClearType"
         Loaded="Window_Loaded">
 
+    <Window.Resources>
+        <!-- Dark ComboBox Item Style -->
+        <Style x:Key="DarkComboBoxItemStyle" TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="#08070D"/>
+            <Setter Property="Foreground" Value="#E9D5FF"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}" Margin="0,1">
+                            <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#251245"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#6B21A8"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Dark ComboBox Style -->
+        <Style x:Key="DarkComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="ItemContainerStyle" Value="{StaticResource DarkComboBoxItemStyle}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid x:Name="MainGrid">
+                            <ToggleButton x:Name="ToggleButton" 
+                                          Focusable="False" 
+                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                          ClickMode="Press">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="#050508" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" Padding="6,3,4,3">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="1" Text="▾" Foreground="#C4B5FD" FontSize="10" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+
+                            <ContentPresenter x:Name="ContentSite" 
+                                              IsHitTestVisible="False" 
+                                              Content="{TemplateBinding SelectionBoxItem}" 
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" 
+                                              Margin="7,2,18,2" 
+                                              VerticalAlignment="Center" 
+                                              HorizontalAlignment="Left">
+                                <ContentPresenter.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#E9D5FF"/>
+                                        <Setter Property="FontSize" Value="11"/>
+                                        <Setter Property="FontWeight" Value="Medium"/>
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+
+                            <Popup x:Name="Popup" 
+                                   Placement="Bottom" 
+                                   IsOpen="{TemplateBinding IsDropDownOpen}" 
+                                   AllowsTransparency="True" 
+                                   Focusable="False" 
+                                   PopupAnimation="Slide">
+                                <Grid x:Name="DropDown" 
+                                      SnapsToDevicePixels="True" 
+                                      MinWidth="{TemplateBinding ActualWidth}" 
+                                      MaxHeight="200">
+                                    <Border x:Name="DropDownBorder" 
+                                            Background="#08070D" 
+                                            BorderBrush="#3B1F5E" 
+                                            BorderThickness="1" 
+                                            CornerRadius="6" 
+                                            Margin="0,3,0,0">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="16" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.9"/>
+                                        </Border.Effect>
+                                        <ScrollViewer Margin="3" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Border Margin="16" CornerRadius="16" Background="#000000" BorderBrush="#362054" BorderThickness="1.5">
         <Border.Effect>
             <DropShadowEffect BlurRadius="32" ShadowDepth="12" Direction="270" Color="#000000" Opacity="0.9"/>
@@ -412,30 +517,58 @@
 
                     <!-- TAB 4: GOOGLE EXPORT -->
                     <StackPanel x:Name="TabPanel_Google" Visibility="Collapsed">
-                        <!-- Card 7: Google Drive & Docs Export Settings -->
+                        <!-- Card 7: Google Drive & Docs Export Destinations -->
+                        <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock Text="EXPORT DESTINATIONS (DOCS &amp; FOLDERS)" Foreground="#C084FC" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <Border HorizontalAlignment="Right" MouseLeftButtonDown="AddTarget_Click" Cursor="Hand" Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" Padding="8,3">
+                                        <TextBlock Text="+ Add Destination" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
+                                    </Border>
+                                </Grid>
+
+                                <TextBlock Text="Configure Google Docs and Drive Folders with custom names. In the Answer window, a dropdown lets you choose which destination to save to:" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8" TextWrapping="Wrap"/>
+
+                                <!-- Table Header -->
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="95"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="70"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Name / Label" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" Text="Type" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold" Margin="6,0,0,0"/>
+                                    <TextBlock Grid.Column="2" Text="Google Doc Link or Folder Link/ID" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold" Margin="6,0,0,0"/>
+                                    <TextBlock Grid.Column="3" Text="Actions" Foreground="#A78BFA" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <!-- Dynamic List of Google Export Targets -->
+                                <StackPanel x:Name="GoogleTargetsListPanel" Margin="0,0,0,8"/>
+
+                                <!-- Add Target Button -->
+                                <Border MouseLeftButtonDown="AddTarget_Click" Cursor="Hand" Background="#050508" BorderBrush="#9333EA" BorderThickness="1" CornerRadius="8" Padding="10,6" HorizontalAlignment="Left">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="+ " Foreground="#E9D5FF" FontSize="12" FontWeight="Bold"/>
+                                        <TextBlock Text="Add Destination" Foreground="#E9D5FF" FontSize="12" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 8: Google Service Account Credentials -->
                         <Border Background="#08070D" CornerRadius="12" BorderBrush="#29193D" BorderThickness="1" Padding="14">
                             <StackPanel>
-                                <TextBlock Text="GOOGLE DRIVE &amp; DOCS EXPORT" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
-                                <TextBlock Text="Configure Google links &amp; folder ID to automatically save Q&amp;A summaries:" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8"/>
+                                <TextBlock Text="GOOGLE SERVICE ACCOUNT CREDENTIALS" Foreground="#C084FC" FontSize="11" FontWeight="Bold" Margin="0,0,0,6"/>
+                                <TextBlock Text="Paste your service account JSON key for direct, automatic document writes and folder placements:" Foreground="#C4B5FD" FontSize="11" Margin="0,0,0,8"/>
 
-                                <TextBlock Text="Google Drive Folder ID or Folder Link:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
-                                <TextBox x:Name="GoogleFolderBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                         BorderThickness="1" Padding="8,6" FontSize="12" Margin="0,0,0,10"
-                                         SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
-
-                                <TextBlock Text="Custom Google Docs / Target Link:" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
-                                <TextBox x:Name="GoogleDocsLinkBox" Background="#050508" Foreground="#FFFFFF" BorderBrush="#3B1F5E" 
-                                         BorderThickness="1" Padding="8,6" FontSize="12" Margin="0,0,0,10"
-                                         SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
-
-                                <TextBlock Text="Google Service Account Credentials (JSON String):" Foreground="#C4B5FD" FontSize="12" Margin="0,0,0,4"/>
                                 <Border Background="#050508" CornerRadius="8" BorderBrush="#3B1F5E" BorderThickness="1" Padding="8">
-                                    <TextBox x:Name="GoogleCredentialsBox" AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="120" MinHeight="60" 
+                                    <TextBox x:Name="GoogleCredentialsBox" AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="120" MinHeight="65" 
                                              Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" 
                                              FontSize="11" FontFamily="Consolas, Segoe UI" VerticalScrollBarVisibility="Auto"
                                              SelectionBrush="#A855F7" SelectionOpacity="0.4"/>
                                 </Border>
-                                <TextBlock Text="* If credentials are provided, Q&amp;A will automatically create a Google Doc in your Drive folder. Otherwise, it copies Q&amp;A text to clipboard and opens the Google link." Foreground="#A78BFA" FontSize="10" Margin="0,6,0,0" TextWrapping="Wrap"/>
+                                <TextBlock Text="* If credentials are provided, Q&amp;A summaries will save directly to your Google Doc or create a doc in your Drive folder. Remember to share your target Docs and Folders with your Service Account email as Editor." Foreground="#A78BFA" FontSize="10" Margin="0,6,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>

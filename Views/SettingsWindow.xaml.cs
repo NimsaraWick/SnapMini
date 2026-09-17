@@ -99,9 +99,8 @@ namespace SnapMini.Views
             this.Topmost = settings.AlwaysOnTop;
 
             // Load Google Settings
-            GoogleFolderBox.Text = settings.GoogleDriveFolderId ?? "";
-            GoogleDocsLinkBox.Text = settings.GoogleDocsCustomLink ?? "";
             GoogleCredentialsBox.Text = settings.GoogleCredentialsJson ?? "";
+            LoadGoogleExportTargets(settings.GoogleExportTargets);
 
             // Load Window Size
             int w = settings.WindowWidth > 0 ? settings.WindowWidth : 680;
@@ -352,6 +351,216 @@ namespace SnapMini.Views
         {
             LoadQuickActionTags(AIService.GetDefaultQuickActions());
         }
+
+        #region Google Export Destinations Management
+
+        private void LoadGoogleExportTargets(List<AIService.GoogleExportTarget>? targets)
+        {
+            GoogleTargetsListPanel.Children.Clear();
+            if (targets != null && targets.Count > 0)
+            {
+                foreach (var target in targets)
+                {
+                    AddGoogleTargetRow(target.Id, target.Name, target.Type, target.UrlOrId);
+                }
+            }
+            else
+            {
+                AddGoogleTargetRow(Guid.NewGuid().ToString(), "Default Doc", "Doc", "");
+            }
+        }
+
+        private void AddTarget_Click(object sender, MouseButtonEventArgs e)
+        {
+            AddGoogleTargetRow(Guid.NewGuid().ToString(), "", "Doc", "");
+        }
+
+        private void AddGoogleTargetRow(string id, string name, string type, string link)
+        {
+            var rowGrid = new Grid
+            {
+                Margin = new Thickness(0, 0, 0, 6),
+                Tag = string.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString() : id
+            };
+
+            rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(120) });
+            rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(95) });
+            rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(70) });
+
+            // Name Box
+            var nameBox = new TextBox
+            {
+                Text = name,
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#050508")),
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3B1F5E")),
+                BorderThickness = new Thickness(1),
+                Padding = new Thickness(6, 4, 6, 4),
+                FontSize = 12,
+                SelectionBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A855F7")),
+                SelectionOpacity = 0.4,
+                ToolTip = "Destination Name (e.g., Biology Notes, Work Folder)"
+            };
+            Grid.SetColumn(nameBox, 0);
+
+            // Type Dropdown (Doc vs Folder)
+            var typeCombo = new ComboBox
+            {
+                Style = (Style)FindResource("DarkComboBoxStyle"),
+                ItemContainerStyle = (Style)FindResource("DarkComboBoxItemStyle"),
+                FontSize = 11,
+                Margin = new Thickness(6, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+                Cursor = Cursors.Hand
+            };
+
+            var itemStyle = (Style)FindResource("DarkComboBoxItemStyle");
+            var docItem = new ComboBoxItem { Content = "📄 Doc", Tag = "Doc", Style = itemStyle };
+            var folderItem = new ComboBoxItem { Content = "📁 Folder", Tag = "Folder", Style = itemStyle };
+            typeCombo.Items.Add(docItem);
+            typeCombo.Items.Add(folderItem);
+
+            if (string.Equals(type, "Folder", StringComparison.OrdinalIgnoreCase))
+            {
+                typeCombo.SelectedItem = folderItem;
+            }
+            else
+            {
+                typeCombo.SelectedItem = docItem;
+            }
+            Grid.SetColumn(typeCombo, 1);
+
+            // Link/ID Box
+            var linkBox = new TextBox
+            {
+                Text = link,
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#050508")),
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3B1F5E")),
+                BorderThickness = new Thickness(1),
+                Padding = new Thickness(6, 4, 6, 4),
+                FontSize = 12,
+                Margin = new Thickness(6, 0, 0, 0),
+                SelectionBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A855F7")),
+                SelectionOpacity = 0.4,
+                ToolTip = "Enter Google Doc URL (https://docs.google.com/...) or Drive Folder URL/ID"
+            };
+            Grid.SetColumn(linkBox, 2);
+
+            // Action Buttons Panel
+            var actionPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            // Move Up Button
+            var upBtn = new Border
+            {
+                Background = Brushes.Transparent,
+                CornerRadius = new CornerRadius(4),
+                Cursor = Cursors.Hand,
+                Width = 22,
+                Height = 22,
+                Margin = new Thickness(0, 0, 2, 0),
+                ToolTip = "Move Up"
+            };
+            var upIcon = new TextBlock
+            {
+                Text = "▲",
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD")),
+                FontSize = 9,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            upBtn.Child = upIcon;
+            upBtn.MouseEnter += (s, e) => { upBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#251245")); upIcon.Foreground = Brushes.White; };
+            upBtn.MouseLeave += (s, e) => { upBtn.Background = Brushes.Transparent; upIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD")); };
+            upBtn.MouseLeftButtonDown += (s, e) =>
+            {
+                int index = GoogleTargetsListPanel.Children.IndexOf(rowGrid);
+                if (index > 0)
+                {
+                    GoogleTargetsListPanel.Children.Remove(rowGrid);
+                    GoogleTargetsListPanel.Children.Insert(index - 1, rowGrid);
+                }
+            };
+
+            // Move Down Button
+            var downBtn = new Border
+            {
+                Background = Brushes.Transparent,
+                CornerRadius = new CornerRadius(4),
+                Cursor = Cursors.Hand,
+                Width = 22,
+                Height = 22,
+                Margin = new Thickness(0, 0, 2, 0),
+                ToolTip = "Move Down"
+            };
+            var downIcon = new TextBlock
+            {
+                Text = "▼",
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD")),
+                FontSize = 9,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            downBtn.Child = downIcon;
+            downBtn.MouseEnter += (s, e) => { downBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#251245")); downIcon.Foreground = Brushes.White; };
+            downBtn.MouseLeave += (s, e) => { downBtn.Background = Brushes.Transparent; downIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4B5FD")); };
+            downBtn.MouseLeftButtonDown += (s, e) =>
+            {
+                int index = GoogleTargetsListPanel.Children.IndexOf(rowGrid);
+                if (index < GoogleTargetsListPanel.Children.Count - 1)
+                {
+                    GoogleTargetsListPanel.Children.Remove(rowGrid);
+                    GoogleTargetsListPanel.Children.Insert(index + 1, rowGrid);
+                }
+            };
+
+            // Delete Button
+            var delBtn = new Border
+            {
+                Background = Brushes.Transparent,
+                CornerRadius = new CornerRadius(4),
+                Cursor = Cursors.Hand,
+                Width = 22,
+                Height = 22,
+                ToolTip = "Delete Destination"
+            };
+            var delIcon = new TextBlock
+            {
+                Text = "✕",
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444")),
+                FontSize = 10,
+                FontWeight = FontWeights.Bold,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            delBtn.Child = delIcon;
+            delBtn.MouseEnter += (s, e) => { delBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#451A1A")); };
+            delBtn.MouseLeave += (s, e) => { delBtn.Background = Brushes.Transparent; };
+            delBtn.MouseLeftButtonDown += (s, e) =>
+            {
+                GoogleTargetsListPanel.Children.Remove(rowGrid);
+            };
+
+            actionPanel.Children.Add(upBtn);
+            actionPanel.Children.Add(downBtn);
+            actionPanel.Children.Add(delBtn);
+            Grid.SetColumn(actionPanel, 3);
+
+            rowGrid.Children.Add(nameBox);
+            rowGrid.Children.Add(typeCombo);
+            rowGrid.Children.Add(linkBox);
+            rowGrid.Children.Add(actionPanel);
+
+            GoogleTargetsListPanel.Children.Add(rowGrid);
+        }
+
+        #endregion
 
         #region Size Presets & Live Preview
 
@@ -637,9 +846,43 @@ namespace SnapMini.Views
                 settings.AlwaysOnTop = AlwaysOnTopCheckBox.IsChecked == true;
 
                 // Save Google Settings
-                settings.GoogleDriveFolderId = GoogleFolderBox.Text.Trim();
-                settings.GoogleDocsCustomLink = GoogleDocsLinkBox.Text.Trim();
+                var googleTargets = new List<AIService.GoogleExportTarget>();
+                foreach (UIElement child in GoogleTargetsListPanel.Children)
+                {
+                    if (child is Grid g)
+                    {
+                        string id = g.Tag is string tid && !string.IsNullOrWhiteSpace(tid) ? tid : Guid.NewGuid().ToString();
+                        string name = "";
+                        string type = "Doc";
+                        string link = "";
+
+                        if (g.Children.Count >= 3)
+                        {
+                            if (g.Children[0] is TextBox nb) name = nb.Text.Trim();
+                            if (g.Children[1] is ComboBox cb && cb.SelectedItem is ComboBoxItem cbi && cbi.Tag is string t) type = t;
+                            if (g.Children[2] is TextBox lb) link = lb.Text.Trim();
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(link))
+                        {
+                            googleTargets.Add(new AIService.GoogleExportTarget
+                            {
+                                Id = id,
+                                Name = string.IsNullOrWhiteSpace(name) ? (type == "Folder" ? "Drive Folder" : "Google Doc") : name,
+                                Type = type,
+                                UrlOrId = link
+                            });
+                        }
+                    }
+                }
+                settings.GoogleExportTargets = googleTargets;
                 settings.GoogleCredentialsJson = GoogleCredentialsBox.Text.Trim();
+
+                // Maintain legacy fields
+                var firstDoc = googleTargets.Find(t => t.Type.Equals("Doc", StringComparison.OrdinalIgnoreCase));
+                var firstFolder = googleTargets.Find(t => t.Type.Equals("Folder", StringComparison.OrdinalIgnoreCase));
+                settings.GoogleDocsCustomLink = firstDoc?.UrlOrId ?? "";
+                settings.GoogleDriveFolderId = firstFolder?.UrlOrId ?? "";
 
                 AIService.SaveSettings(settings);
                 IsSaved = true;

@@ -166,7 +166,8 @@ namespace SnapMini.Services
 
         public static async Task<string> ExportQaSummaryAsync(
             string question,
-            string answer)
+            string answer,
+            AIService.GoogleExportTarget? target = null)
         {
             var settings = AIService.ReadSettings();
 
@@ -221,53 +222,102 @@ namespace SnapMini.Services
                 DateTime.Now.ToString("g");
 
             // --------------------------------------------------------
-            // 2. FIND EXISTING DOCUMENT ID
+            // 2. FIND DOCUMENT ID OR DRIVE FOLDER ID
             // --------------------------------------------------------
 
             string existingDocId = "";
-
-            var docMatch =
-                Regex.Match(
-                    customLink,
-                    @"/document/d/([a-zA-Z0-9_-]+)");
-
-            if (!docMatch.Success)
-            {
-                docMatch =
-                    Regex.Match(
-                        rawFolder,
-                        @"/document/d/([a-zA-Z0-9_-]+)");
-            }
-
-            if (docMatch.Success)
-            {
-                existingDocId =
-                    docMatch.Groups[1].Value;
-            }
-
-            // --------------------------------------------------------
-            // 3. FIND DRIVE FOLDER ID
-            // --------------------------------------------------------
-
             string folderId = "";
 
-            var folderMatch =
-                Regex.Match(
-                    rawFolder,
-                    @"/folders/([a-zA-Z0-9_-]+)");
+            if (target != null)
+            {
+                string urlOrId = (target.UrlOrId ?? "").Trim();
+                bool isFolderType = string.Equals(target.Type, "Folder", StringComparison.OrdinalIgnoreCase);
+                bool isDocType = string.Equals(target.Type, "Doc", StringComparison.OrdinalIgnoreCase);
 
-            if (folderMatch.Success)
-            {
-                folderId =
-                    folderMatch.Groups[1].Value;
+                var docRegex = Regex.Match(urlOrId, @"/document/d/([a-zA-Z0-9_-]+)");
+                var folderRegex = Regex.Match(urlOrId, @"/folders/([a-zA-Z0-9_-]+)");
+
+                if (docRegex.Success)
+                {
+                    existingDocId = docRegex.Groups[1].Value;
+                    customLink = urlOrId;
+                    rawFolder = "";
+                }
+                else if (folderRegex.Success)
+                {
+                    folderId = folderRegex.Groups[1].Value;
+                    rawFolder = urlOrId;
+                    customLink = "";
+                }
+                else if (isDocType)
+                {
+                    if (!urlOrId.StartsWith("http", StringComparison.OrdinalIgnoreCase) && !urlOrId.Contains("/"))
+                    {
+                        existingDocId = urlOrId;
+                    }
+                    customLink = urlOrId;
+                    rawFolder = "";
+                }
+                else if (isFolderType)
+                {
+                    if (!urlOrId.StartsWith("http", StringComparison.OrdinalIgnoreCase) && !urlOrId.Contains("/"))
+                    {
+                        folderId = urlOrId;
+                    }
+                    rawFolder = urlOrId;
+                    customLink = "";
+                }
+                else
+                {
+                    if (urlOrId.Contains("drive.google.com") || urlOrId.Contains("folders"))
+                    {
+                        rawFolder = urlOrId;
+                    }
+                    else
+                    {
+                        customLink = urlOrId;
+                    }
+                }
             }
-            else if (
-                !rawFolder.StartsWith(
-                    "http",
-                    StringComparison.OrdinalIgnoreCase) &&
-                !rawFolder.Contains("/"))
+            else
             {
-                folderId = rawFolder;
+                var docMatch =
+                    Regex.Match(
+                        customLink,
+                        @"/document/d/([a-zA-Z0-9_-]+)");
+
+                if (!docMatch.Success)
+                {
+                    docMatch =
+                        Regex.Match(
+                            rawFolder,
+                            @"/document/d/([a-zA-Z0-9_-]+)");
+                }
+
+                if (docMatch.Success)
+                {
+                    existingDocId =
+                        docMatch.Groups[1].Value;
+                }
+
+                var folderMatch =
+                    Regex.Match(
+                        rawFolder,
+                        @"/folders/([a-zA-Z0-9_-]+)");
+
+                if (folderMatch.Success)
+                {
+                    folderId =
+                        folderMatch.Groups[1].Value;
+                }
+                else if (
+                    !rawFolder.StartsWith(
+                        "http",
+                        StringComparison.OrdinalIgnoreCase) &&
+                    !rawFolder.Contains("/"))
+                {
+                    folderId = rawFolder;
+                }
             }
 
             // --------------------------------------------------------
@@ -540,11 +590,23 @@ namespace SnapMini.Services
 
             string targetUrl =
                 !string.IsNullOrWhiteSpace(customLink)
-                    ? customLink
+                    ? (customLink.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                        ? customLink
+                        : (!string.IsNullOrWhiteSpace(existingDocId)
+                            ? $"https://docs.google.com/document/d/{existingDocId}/edit"
+                            : customLink))
                     : (
                         !string.IsNullOrWhiteSpace(rawFolder)
-                            ? rawFolder
-                            : "https://docs.google.com/document/create"
+                            ? (rawFolder.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                                ? rawFolder
+                                : (!string.IsNullOrWhiteSpace(folderId)
+                                    ? $"https://drive.google.com/drive/folders/{folderId}"
+                                    : rawFolder))
+                            : (!string.IsNullOrWhiteSpace(existingDocId)
+                                ? $"https://docs.google.com/document/d/{existingDocId}/edit"
+                                : (!string.IsNullOrWhiteSpace(folderId)
+                                    ? $"https://drive.google.com/drive/folders/{folderId}"
+                                    : "https://docs.google.com/document/create"))
                     );
 
             if (!targetUrl.StartsWith(

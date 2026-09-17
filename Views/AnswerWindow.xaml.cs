@@ -44,6 +44,7 @@ namespace SnapMini.Views
 
             LoadLogoImage();
             LoadQuickActionTags();
+            LoadGoogleTargetsDropdown();
 
             // Read user's custom AutoCloseSeconds from appsettings.json
             var settings = AIService.ReadSettings();
@@ -82,6 +83,95 @@ namespace SnapMini.Views
                 _timer.Start();
             }
         }
+
+        #region Google Export Target Dropdown
+
+        private void LoadGoogleTargetsDropdown()
+        {
+            GoogleTargetComboBox.SelectionChanged -= GoogleTargetComboBox_SelectionChanged;
+            GoogleTargetComboBox.Items.Clear();
+
+            var settings = AIService.ReadSettings();
+            var targets = settings.GoogleExportTargets;
+
+            if (targets == null || targets.Count == 0)
+            {
+                var defaultItem = new ComboBoxItem
+                {
+                    Content = "📄 Default Doc",
+                    Tag = null,
+                    ToolTip = "Default Google Doc"
+                };
+                GoogleTargetComboBox.Items.Add(defaultItem);
+                GoogleTargetComboBox.SelectedIndex = 0;
+                GoogleTargetComboBox.SelectionChanged += GoogleTargetComboBox_SelectionChanged;
+                return;
+            }
+
+            ComboBoxItem? itemToSelect = null;
+            foreach (var target in targets)
+            {
+                string icon = string.Equals(target.Type, "Folder", StringComparison.OrdinalIgnoreCase) ? "📁" : "📄";
+                string label = string.IsNullOrWhiteSpace(target.Name) ? (target.Type == "Folder" ? "Drive Folder" : "Google Doc") : target.Name;
+
+                var item = new ComboBoxItem
+                {
+                    Content = $"{icon} {label}",
+                    Tag = target,
+                    ToolTip = $"{label}\nType: {(target.Type == "Folder" ? "Google Drive Folder" : "Google Document")}\nLink/ID: {target.UrlOrId}"
+                };
+
+                GoogleTargetComboBox.Items.Add(item);
+
+                if (!string.IsNullOrWhiteSpace(settings.LastSelectedGoogleTargetId) && target.Id == settings.LastSelectedGoogleTargetId)
+                {
+                    itemToSelect = item;
+                }
+            }
+
+            if (itemToSelect != null)
+            {
+                GoogleTargetComboBox.SelectedItem = itemToSelect;
+            }
+            else if (GoogleTargetComboBox.Items.Count > 0)
+            {
+                GoogleTargetComboBox.SelectedIndex = 0;
+            }
+
+            UpdateSaveDocButtonToolTip();
+            GoogleTargetComboBox.SelectionChanged += GoogleTargetComboBox_SelectionChanged;
+        }
+
+        private void GoogleTargetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateSaveDocButtonToolTip();
+
+            if (GoogleTargetComboBox.SelectedItem is ComboBoxItem cbi && cbi.Tag is AIService.GoogleExportTarget target)
+            {
+                try
+                {
+                    var settings = AIService.ReadSettings();
+                    settings.LastSelectedGoogleTargetId = target.Id;
+                    AIService.SaveSettings(settings);
+                }
+                catch { }
+            }
+        }
+
+        private void UpdateSaveDocButtonToolTip()
+        {
+            if (GoogleTargetComboBox.SelectedItem is ComboBoxItem cbi && cbi.Tag is AIService.GoogleExportTarget target)
+            {
+                string label = string.IsNullOrWhiteSpace(target.Name) ? (target.Type == "Folder" ? "Drive Folder" : "Google Doc") : target.Name;
+                SaveDocBtn.ToolTip = $"Save Q&A to '{label}' (Ctrl+D)";
+            }
+            else
+            {
+                SaveDocBtn.ToolTip = "Save Q&A to Google Docs / Drive (Ctrl+D)";
+            }
+        }
+
+        #endregion
 
         #region Dynamic Quick Action Tags
 
@@ -665,12 +755,33 @@ namespace SnapMini.Views
                 var lastAssistant = _chatHistory.FindLast(m => m.Role == "assistant");
                 string answerText = lastAssistant?.Content ?? _initialAnswerText;
 
-                string target = await GoogleDocsService.ExportQaSummaryAsync(questionText, answerText);
+                AIService.GoogleExportTarget? selectedTarget = null;
+                if (GoogleTargetComboBox.SelectedItem is ComboBoxItem cbi && cbi.Tag is AIService.GoogleExportTarget t)
+                {
+                    selectedTarget = t;
+                }
+
+                string target = await GoogleDocsService.ExportQaSummaryAsync(questionText, answerText, selectedTarget);
+
+                if (selectedTarget != null)
+                {
+                    try
+                    {
+                        var settings = AIService.ReadSettings();
+                        settings.LastSelectedGoogleTargetId = selectedTarget.Id;
+                        AIService.SaveSettings(settings);
+                    }
+                    catch { }
+                }
+
+                string destName = selectedTarget != null && !string.IsNullOrWhiteSpace(selectedTarget.Name)
+                    ? selectedTarget.Name
+                    : "Google Docs";
 
                 if (!string.IsNullOrWhiteSpace(target) && target.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 {
                     try { Clipboard.SetText(target); } catch { }
-                    SaveDocBtn.ToolTip = $"Saved to Google Docs!\nLink copied to clipboard:\n{target}";
+                    SaveDocBtn.ToolTip = $"Saved to {destName}!\nLink copied to clipboard:\n{target}";
                 }
 
                 SaveDocBtnText.Text = "Saved!";
@@ -682,7 +793,7 @@ namespace SnapMini.Views
                     resetTimer.Stop();
                     SaveDocBtnText.Text = "Save to Docs";
                     SaveDocIcon.Text = "📄 ";
-                    SaveDocBtn.ToolTip = "Save Q&A to Google Docs / Drive (Ctrl+D)";
+                    UpdateSaveDocButtonToolTip();
                 };
                 resetTimer.Start();
             }
@@ -691,6 +802,7 @@ namespace SnapMini.Views
                 MessageBox.Show($"Could not save to Google Docs:\n{ex.Message}", "SnapMini Google Export");
                 SaveDocBtnText.Text = "Save to Docs";
                 SaveDocIcon.Text = "📄 ";
+                UpdateSaveDocButtonToolTip();
             }
         }
 

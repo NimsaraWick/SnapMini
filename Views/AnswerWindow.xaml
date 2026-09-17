@@ -149,10 +149,122 @@
                     <TextBlock Grid.Column="0" Text="AI CONVERSATION" Foreground="#C084FC" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Google Export Target Dropdown -->
+                        <ComboBox x:Name="GoogleTargetComboBox" 
+                                  MinWidth="120" MaxWidth="175" Height="25"
+                                  FontSize="11" Foreground="#E9D5FF"
+                                  Cursor="Hand" Margin="0,0,6,0" VerticalAlignment="Center"
+                                  ToolTip="Choose destination Google Doc or Drive Folder"
+                                  SelectionChanged="GoogleTargetComboBox_SelectionChanged">
+                            <ComboBox.Style>
+                                <Style TargetType="ComboBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ComboBox">
+                                                <Grid x:Name="MainGrid">
+                                                    <ToggleButton x:Name="ToggleButton" 
+                                                                  Focusable="False" 
+                                                                  IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                                                  ClickMode="Press">
+                                                        <ToggleButton.Template>
+                                                            <ControlTemplate TargetType="ToggleButton">
+                                                                <Border Background="#160B28" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" Padding="6,2,4,2">
+                                                                    <Grid>
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                            <ColumnDefinition Width="Auto"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <TextBlock Grid.Column="1" Text="▾" Foreground="#C4B5FD" FontSize="10" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                                                    </Grid>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </ToggleButton.Template>
+                                                    </ToggleButton>
+
+                                                    <ContentPresenter x:Name="ContentSite" 
+                                                                      IsHitTestVisible="False" 
+                                                                      Content="{TemplateBinding SelectionBoxItem}" 
+                                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
+                                                                      ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" 
+                                                                      Margin="7,2,18,2" 
+                                                                      VerticalAlignment="Center" 
+                                                                      HorizontalAlignment="Left">
+                                                        <ContentPresenter.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="#E9D5FF"/>
+                                                                <Setter Property="FontSize" Value="11"/>
+                                                                <Setter Property="FontWeight" Value="Medium"/>
+                                                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                            </Style>
+                                                        </ContentPresenter.Resources>
+                                                    </ContentPresenter>
+
+                                                    <Popup x:Name="Popup" 
+                                                           Placement="Bottom" 
+                                                           IsOpen="{TemplateBinding IsDropDownOpen}" 
+                                                           AllowsTransparency="True" 
+                                                           Focusable="False" 
+                                                           PopupAnimation="Slide">
+                                                        <Grid x:Name="DropDown" 
+                                                              SnapsToDevicePixels="True" 
+                                                              MinWidth="{TemplateBinding ActualWidth}" 
+                                                              MaxHeight="200">
+                                                            <Border x:Name="DropDownBorder" 
+                                                                    Background="#0E071A" 
+                                                                    BorderBrush="#3B1F5E" 
+                                                                    BorderThickness="1" 
+                                                                    CornerRadius="6" 
+                                                                    Margin="0,3,0,0">
+                                                                <Border.Effect>
+                                                                    <DropShadowEffect BlurRadius="16" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.8"/>
+                                                                </Border.Effect>
+                                                                <ScrollViewer Margin="3" SnapsToDevicePixels="True">
+                                                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                                                </ScrollViewer>
+                                                            </Border>
+                                                        </Grid>
+                                                    </Popup>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ComboBox.Style>
+
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Background" Value="#0E071A"/>
+                                    <Setter Property="Foreground" Value="#E9D5FF"/>
+                                    <Setter Property="Padding" Value="8,5"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="FontSize" Value="11"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ComboBoxItem">
+                                                <Border x:Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}" Margin="0,1">
+                                                    <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="ItemBorder" Property="Background" Value="#251245"/>
+                                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="ItemBorder" Property="Background" Value="#6B21A8"/>
+                                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
+
                         <!-- Save to Google Docs Button -->
                         <Border x:Name="SaveDocBtn" MouseLeftButtonDown="SaveToDocs_Click" Cursor="Hand" 
                                 Background="#1A0D30" BorderBrush="#3B1F5E" BorderThickness="1" CornerRadius="6" 
-                                Padding="8,3" Margin="0,0,6,0" VerticalAlignment="Center" ToolTip="Save Q&amp;A to Google Docs / Drive (Ctrl+D)">
+                                Padding="8,3" Margin="0,0,6,0" VerticalAlignment="Center" ToolTip="Save Q&amp;A to selected destination (Ctrl+D)">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="SaveDocIcon" Text="📄 " Foreground="#E9D5FF" FontSize="11"/>
                                 <TextBlock x:Name="SaveDocBtnText" Text="Save to Docs" Foreground="#E9D5FF" FontSize="11" FontWeight="Medium"/>
